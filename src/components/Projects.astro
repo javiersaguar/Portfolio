@@ -1,0 +1,254 @@
+---
+import Icon from './Icon.astro';
+import { featured, sideQuests, site } from '../data/site';
+---
+
+<section class="section" id="projects">
+  <div class="wrap">
+    <h2 class="section-title reveal">Projects</h2>
+    <p class="section-lead reveal">
+      Data platforms, security tooling and a game. Built at hackathons, for class, and on weekends.
+    </p>
+
+    <div class="grid">
+      {
+        featured.map((p, i) => (
+          <article class:list={['card', 'reveal', { big: i === 0 }]} style={`--d:${i}`}>
+            <div class="card-top">
+              <span class="context mono">{p.context}</span>
+              <div class="stat">
+                <span class="stat-value pixel">{p.stat.value}</span>
+                <span class="stat-label">{p.stat.label}</span>
+              </div>
+            </div>
+            <h3 class="pixel">{p.name}</h3>
+            <p class="tagline">{p.tagline}</p>
+            <p class="body">{p.body}</p>
+            <ul class="stack" aria-label="Stack">
+              {p.stack.map((s) => (
+                <li class="tag">{s}</li>
+              ))}
+            </ul>
+            <div class="actions">
+              {p.url && (
+                <a href={p.url} target="_blank" rel="noopener" class="link live">
+                  Live <Icon name="arrow" />
+                </a>
+              )}
+              <a href={`${site.github}/${p.repo}`} target="_blank" rel="noopener" class="link">
+                <Icon name="github" /> Code
+              </a>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <h3 class="quests-title pixel reveal">Side quests</h3>
+    <ul class="quests">
+      {
+        sideQuests.map((q, i) => (
+          <li class="reveal" style={`--d:${i}`}>
+            <a href={q.url} target="_blank" rel="noopener">
+              <span class="q-name pixel">{q.name}</span>
+              <span class="q-note">{q.note}</span>
+              <Icon name="arrow" class="q-arrow" />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 28px;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    transition:
+      border-color 200ms var(--ease),
+      transform 200ms var(--ease),
+      box-shadow 200ms var(--ease),
+      opacity 600ms var(--ease);
+  }
+  .card:hover {
+    border-color: var(--accent-dim);
+    transform: translate(-3px, -3px);
+    box-shadow: 6px 6px 0 var(--accent-dim);
+  }
+  .card.big {
+    grid-column: span 2;
+    background:
+      radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 55%),
+      repeating-linear-gradient(0deg, transparent 0 15px, color-mix(in srgb, var(--accent) 5%, transparent) 15px 16px),
+      var(--bg-2);
+  }
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .context {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .stat {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  .stat-value {
+    font-size: 32px;
+    line-height: 1;
+    color: var(--accent);
+  }
+  .big .stat-value {
+    font-size: 56px;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    max-width: 18ch;
+    margin-top: 6px;
+  }
+  h3 {
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 1.15;
+    margin: 0 0 6px;
+  }
+  .big h3 {
+    font-size: 34px;
+  }
+  .tagline {
+    margin: 0 0 12px;
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .body {
+    margin: 0 0 20px;
+    color: var(--muted);
+    font-size: 15px;
+  }
+  .big .body {
+    max-width: 62ch;
+  }
+  .stack {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .actions {
+    margin-top: auto;
+    display: flex;
+    gap: 20px;
+  }
+  .link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-pixel);
+    font-size: 14px;
+    text-decoration: none;
+    color: var(--ink-2);
+    transition: color 160ms var(--ease);
+  }
+  .link:hover,
+  .link.live {
+    color: var(--accent);
+  }
+  .link .icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .quests-title {
+    font-weight: 400;
+    font-size: 22px;
+    margin: 72px 0 20px;
+  }
+  .quests {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 40px;
+  }
+  .quests a {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: baseline;
+    gap: 16px;
+    padding: 16px 0;
+    text-decoration: none;
+    border-top: 1px dashed var(--line);
+  }
+  .q-name {
+    font-size: 15px;
+    transition: color 160ms var(--ease);
+  }
+  .q-note {
+    color: var(--muted);
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .quests :global(.q-arrow) {
+    width: 16px;
+    height: 16px;
+    color: var(--muted);
+    transition: transform 160ms var(--ease), color 160ms var(--ease);
+  }
+  .quests a:hover .q-name,
+  .quests a:hover :global(.q-arrow) {
+    color: var(--accent);
+  }
+  .quests a:hover :global(.q-arrow) {
+    transform: translate(2px, -2px);
+  }
+
+  @media (max-width: 1023px) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 767px) {
+    .grid,
+    .quests {
+      grid-template-columns: 1fr;
+    }
+    .card.big {
+      grid-column: auto;
+    }
+    .card {
+      padding: 22px;
+    }
+    .big .stat-value {
+      font-size: 40px;
+    }
+    .quests a {
+      grid-template-columns: 1fr auto;
+    }
+    .q-note {
+      grid-row: 2;
+      white-space: normal;
+    }
+  }
+</style>

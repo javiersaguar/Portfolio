@@ -1,0 +1,326 @@
+---
+import Icon from './Icon.astro';
+import { featured, site } from '../data/site';
+
+const channels = [
+  { name: 'GitHub', handle: `@${site.handle}`, href: site.github, icon: 'github' as const },
+  { name: 'LinkedIn', handle: site.linkedinHandle, href: site.linkedin, icon: 'linkedin' as const },
+];
+
+const termData = {
+  name: site.name,
+  github: site.github,
+  linkedin: site.linkedin,
+  projects: featured.map((p) => ({ name: p.name, tagline: p.tagline })),
+};
+---
+
+<section class="section" id="contact">
+  <div class="wrap">
+    <h2 class="section-title reveal">Contact</h2>
+    <p class="section-lead reveal">Looking for internships and junior roles in data engineering. Say hi.</p>
+
+    <ul class="channels">
+      {
+        channels.map((c, i) => (
+          <li class="reveal" style={`--d:${i}`}>
+            <a href={c.href} target="_blank" rel="noopener">
+              <Icon name={c.icon} class="c-icon" />
+              <span class="c-name pixel">{c.name}</span>
+              <span class="c-handle mono">{c.handle}</span>
+              <Icon name="arrow" class="c-arrow" />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="term reveal" data-term={JSON.stringify(termData)}>
+      <div class="term-bar mono">
+        <Icon name="terminal" />
+        <span>guest@{site.domain}</span>
+      </div>
+      <div class="term-out mono" aria-live="polite">
+        <p>hi. this is javier's terminal.</p>
+        <p>type a command and press enter, or use the buttons below.</p>
+      </div>
+      <form class="term-in mono">
+        <label for="term-cmd"><span class="prompt">guest</span>~ $</label>
+        <input id="term-cmd" autocomplete="off" spellcheck="false" placeholder="type a command" aria-label="Terminal command" />
+      </form>
+      <div class="term-btns">
+        {['help', 'whoami', 'projects', 'contact'].map((c) => (
+          <button type="button" class="mono" data-cmd={c}>{c}</button>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="wrap foot-inner mono">
+    <span>Built block by block. © {new Date().getFullYear()} {site.name}</span>
+    <a href="#top">Back to top</a>
+  </div>
+</footer>
+
+<style>
+  .channels {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 56px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+  .channels a {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
+    column-gap: 16px;
+    align-items: center;
+    padding: 22px 24px;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    text-decoration: none;
+    transition: transform 200ms var(--ease), box-shadow 200ms var(--ease), border-color 200ms var(--ease);
+  }
+  .channels a:hover {
+    border-color: var(--accent-dim);
+    transform: translate(-3px, -3px);
+    box-shadow: 6px 6px 0 var(--accent-dim);
+  }
+  .channels :global(.c-icon) {
+    grid-row: span 2;
+    width: 32px;
+    height: 32px;
+    color: var(--accent);
+  }
+  .c-name {
+    font-size: 18px;
+  }
+  .c-handle {
+    grid-column: 2;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .channels :global(.c-arrow) {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    color: var(--muted);
+    transition: transform 160ms var(--ease), color 160ms var(--ease);
+  }
+  .channels a:hover :global(.c-arrow) {
+    color: var(--accent);
+    transform: translate(2px, -2px);
+  }
+
+  .term {
+    border: 1px solid var(--line);
+    background: #090a08;
+    font-size: 14px;
+  }
+  .term-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .term-out {
+    padding: 16px 16px 0;
+    max-height: 320px;
+    overflow-y: auto;
+  }
+  .term-out :global(p) {
+    margin: 0 0 4px;
+    color: var(--ink-2);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .term-out :global(.echo) {
+    color: var(--muted);
+  }
+  .term-out :global(.ok) {
+    color: var(--accent);
+  }
+  .term-out :global(a) {
+    color: var(--accent);
+  }
+  .term-in {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+  }
+  .term-in label {
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .prompt {
+    color: var(--accent);
+  }
+  .term-in input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: 0;
+    color: var(--ink);
+    font: inherit;
+    caret-color: var(--accent);
+  }
+  .term-in input::placeholder {
+    color: #6f746a;
+  }
+  .term-in input:focus {
+    outline: none;
+  }
+  .term-in:focus-within {
+    box-shadow: inset 0 0 0 1px var(--accent-dim);
+  }
+  .term-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 16px 16px;
+  }
+  .term-btns button {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    color: var(--ink-2);
+    font-size: 13px;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: color 160ms var(--ease), border-color 160ms var(--ease), transform 100ms var(--ease);
+  }
+  .term-btns button:hover {
+    color: var(--accent);
+    border-color: var(--accent-dim);
+  }
+  .term-btns button:active {
+    transform: translateY(1px);
+  }
+
+  .foot {
+    border-top: 1px solid var(--line);
+    padding: 28px 0;
+  }
+  .foot-inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .foot a {
+    text-decoration: none;
+  }
+  .foot a:hover {
+    color: var(--accent);
+  }
+
+  @media (max-width: 767px) {
+    .channels {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  type Data = {
+    name: string;
+    github: string;
+    linkedin: string;
+    projects: { name: string; tagline: string }[];
+  };
+
+  const term = document.querySelector<HTMLElement>('.term')!;
+  const data: Data = JSON.parse(term.dataset.term!);
+  const out = term.querySelector<HTMLElement>('.term-out')!;
+  const form = term.querySelector<HTMLFormElement>('.term-in')!;
+  const input = form.querySelector<HTMLInputElement>('input')!;
+  const history: string[] = [];
+  let cursor = 0;
+
+  const print = (text: string, cls = '') => {
+    const p = document.createElement('p');
+    if (cls) p.className = cls;
+    p.textContent = text;
+    out.appendChild(p);
+  };
+  const link = (label: string, href: string) => {
+    const p = document.createElement('p');
+    const a = document.createElement('a');
+    a.href = href;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.textContent = label;
+    p.append(a);
+    out.appendChild(p);
+  };
+
+  const commands: Record<string, () => void> = {
+    help: () =>
+      print(
+        'available commands:\n  whoami     who is this\n  projects   what I have built\n  contact    where to find me\n  github     open my GitHub\n  linkedin   open my LinkedIn\n  clear      clean the screen',
+      ),
+    whoami: () =>
+      print(`${data.name}. final-year data engineering student. cybersecurity enthusiast. sometimes a builder.`),
+    projects: () => {
+      data.projects.forEach((p) => print(`> ${p.name.padEnd(24)} ${p.tagline}`));
+      print('scroll up to #projects for the details.', 'echo');
+    },
+    contact: () => {
+      link(`github    ${data.github}`, data.github);
+      link(`linkedin  ${data.linkedin}`, data.linkedin);
+    },
+    github: () => {
+      print('opening github...', 'ok');
+      window.open(data.github, '_blank', 'noopener');
+    },
+    linkedin: () => {
+      print('opening linkedin...', 'ok');
+      window.open(data.linkedin, '_blank', 'noopener');
+    },
+    clear: () => {
+      out.replaceChildren();
+    },
+    sudo: () => print('nice try. this incident will be reported.', 'ok'),
+    ls: () => print('projects/  about.txt  contact.txt  pokemon-panchito.sav'),
+  };
+
+  const run = (raw: string) => {
+    const cmd = raw.trim().toLowerCase();
+    if (!cmd) return;
+    history.push(cmd);
+    cursor = history.length;
+    print(`guest~ $ ${cmd}`, 'echo');
+    const name = cmd.split(/\s+/)[0];
+    const fn = commands[name];
+    if (fn) fn();
+    else print(`command not found: ${name}. try "help".`);
+    out.scrollTop = out.scrollHeight;
+  };
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    run(input.value);
+    input.value = '';
+  });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowUp' && cursor > 0) {
+      input.value = history[--cursor];
+      e.preventDefault();
+    } else if (e.key === 'ArrowDown') {
+      cursor = Math.min(cursor + 1, history.length);
+      input.value = history[cursor] ?? '';
+      e.preventDefault();
+    }
+  });
+  term.querySelectorAll<HTMLButtonElement>('[data-cmd]').forEach((b) =>
+    b.addEventListener('click', () => run(b.dataset.cmd!)),
+  );
+</script>

@@ -1,0 +1,206 @@
+---
+import { site } from '../data/site';
+
+type Day = { date: string; count: number; level: number };
+
+// Fetched at build time; the page is rebuilt on every deploy.
+let days: Day[] = [];
+let total = 0;
+try {
+  const res = await fetch(`https://github-contributions-api.jogruber.de/v4/${site.handle}?y=last`);
+  if (res.ok) {
+    const data = await res.json();
+    days = data.contributions;
+    total = data.total?.lastYear ?? days.reduce((n: number, d: Day) => n + d.count, 0);
+  }
+} catch {
+  days = [];
+}
+
+// Pad the start so the first column begins on a Sunday, like GitHub's calendar.
+const pad = days.length ? new Date(days[0].date + 'T00:00:00Z').getUTCDay() : 0;
+const cells: (Day | null)[] = [...Array(pad).fill(null), ...days];
+const best = days.reduce<Day | null>((b, d) => (!b || d.count > b.count ? d : b), null);
+const activeDays = days.filter((d) => d.count > 0).length;
+const fmt = (iso: string) =>
+  new Date(iso + 'T00:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+---
+
+<section class="section" id="activity">
+  <div class="wrap">
+    <h2 class="section-title reveal">A year in blocks</h2>
+    <p class="section-lead reveal">Every day I commit is a block. The greener, the more I shipped.</p>
+
+    {
+      days.length ? (
+        <div class="board reveal">
+          <div class="scroller">
+            <div class="cal" role="img" aria-label={`${total} contributions in the last year`}>
+              {cells.map((d, i) =>
+                d ? (
+                  <span class={`c l${d.level}`} style={`--w:${Math.floor(i / 7)}`} title={`${d.count} on ${fmt(d.date)}`} />
+                ) : (
+                  <span class="c empty" />
+                ),
+              )}
+            </div>
+          </div>
+          <div class="meta">
+            <p class="mono">
+              <a href={site.github} target="_blank" rel="noopener">@{site.handle}</a>
+            </p>
+            <dl>
+              <div>
+                <dt class="mono">Contributions</dt>
+                <dd class="pixel">{total.toLocaleString('en-US')}</dd>
+              </div>
+              <div>
+                <dt class="mono">Active days</dt>
+                <dd class="pixel">{activeDays}</dd>
+              </div>
+              {best && (
+                <div>
+                  <dt class="mono">Best day</dt>
+                  <dd class="pixel">
+                    {best.count} <span class="mono small">{fmt(best.date)}</span>
+                  </dd>
+                </div>
+              )}
+            </dl>
+            <div class="legend mono" aria-hidden="true">
+              Less <span class="c l0" /><span class="c l1" /><span class="c l2" /><span class="c l3" /><span class="c l4" /> More
+            </div>
+          </div>
+        </div>
+      ) : (
+        <p class="empty-state mono">
+          The calendar could not load right now. See it on <a href={site.github}>GitHub</a>.
+        </p>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .board {
+    border: 1px solid var(--line);
+    background: var(--bg-2);
+    padding: 24px;
+  }
+  .scroller {
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  .cal {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(7, 13px);
+    grid-auto-columns: 13px;
+    gap: 3px;
+    width: max-content;
+  }
+  .c {
+    width: 13px;
+    height: 13px;
+    display: inline-block;
+  }
+  .empty {
+    background: transparent;
+  }
+  .l0 {
+    background: #1b1d19;
+  }
+  .l1 {
+    background: #1f4a2b;
+  }
+  .l2 {
+    background: #2b7a43;
+  }
+  .l3 {
+    background: #42b065;
+  }
+  .l4 {
+    background: var(--accent);
+  }
+  .board.in .cal .c:not(.empty) {
+    animation: pop 400ms var(--ease) both;
+    animation-delay: calc(var(--w) * 14ms);
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px 40px;
+    margin-top: 20px;
+  }
+  .meta p {
+    margin: 0;
+    font-size: 13px;
+  }
+  .meta a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  dl {
+    display: flex;
+    gap: 40px;
+    margin: 0;
+  }
+  dt {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  dd {
+    margin: 4px 0 0;
+    font-size: 24px;
+  }
+  .small {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .legend {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .legend .c:first-child {
+    margin-left: 6px;
+  }
+  .legend .c:last-child {
+    margin-right: 6px;
+  }
+  .empty-state {
+    color: var(--muted);
+  }
+  .empty-state a {
+    color: var(--accent);
+  }
+
+  @media (max-width: 767px) {
+    .board {
+      padding: 16px;
+    }
+    dl {
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    dd {
+      font-size: 20px;
+    }
+  }
+</style>
+
+<script>
+  // On narrow screens, start the calendar at the most recent weeks.
+  const scroller = document.querySelector<HTMLElement>('#activity .scroller');
+  if (scroller) scroller.scrollLeft = scroller.scrollWidth;
+</script>

@@ -1,0 +1,20 @@
+---
+import github from '@phosphor-icons/core/assets/regular/github-logo.svg?raw';
+import linkedin from '@phosphor-icons/core/assets/regular/linkedin-logo.svg?raw';
+import arrow from '@phosphor-icons/core/assets/regular/arrow-up-right.svg?raw';
+import down from '@phosphor-icons/core/assets/regular/arrow-down.svg?raw';
+import terminal from '@phosphor-icons/core/assets/regular/terminal-window.svg?raw';
+import list from '@phosphor-icons/core/assets/regular/list.svg?raw';
+import x from '@phosphor-icons/core/assets/regular/x.svg?raw';
+
+const icons = { github, linkedin, arrow, down, terminal, list, x };
+
+interface Props {
+  name: keyof typeof icons;
+  class?: string;
+}
+
+const { name, class: cls } = Astro.props;
+---
+
+<span class:list={['icon', cls]} aria-hidden="true" set:html={icons[name]} />

@@ -1,0 +1,185 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+
+const words = site.name.split(' ').map((w, wi, all) => {
+  const offset = all.slice(0, wi).join('').length + wi;
+  return [...w].map((ch, i) => ({ ch, i: offset + i }));
+});
+---
+
+<section class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div class="copy">
+      <p class="player pixel">Player 1 · Data Engineer</p>
+      <h1 class="name pixel" aria-label={site.name}>
+        {
+          words.map((word) => (
+            <span class="word" aria-hidden="true">
+              {word.map(({ ch, i }) => (
+                <span class="block" style={`--i:${i}`}>{ch}</span>
+              ))}
+            </span>
+          ))
+        }
+      </h1>
+      <p class="sub">
+        Final-year <strong>Data Engineering</strong> student at {site.school}.
+        Cybersecurity enthusiast. <span class="hl">Sometimes a builder.</span>
+      </p>
+      <div class="ctas">
+        <a href="#projects" class="btn">See projects <Icon name="down" /></a>
+        <a href={site.github} target="_blank" rel="noopener" class="btn ghost">
+          <Icon name="github" /> GitHub
+        </a>
+      </div>
+    </div>
+
+    <figure class="portrait">
+      <div class="frame">
+        <img src="/avatar-40.png" width="40" height="40" alt={`Pixel portrait of ${site.name}`} />
+      </div>
+      <figcaption class="mono">
+        <span>HP</span><span class="bar" style="--v:0.86"></span>
+        <span>XP</span><span class="bar xp" style="--v:0.62"></span>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<style>
+  .hero {
+    min-height: calc(100dvh - 64px);
+    display: flex;
+    align-items: center;
+    padding: 48px 0 72px;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .player {
+    color: var(--accent);
+    font-size: 14px;
+    margin: 0 0 20px;
+  }
+  .name {
+    font-weight: 400;
+    font-size: clamp(40px, 6.4vw, 80px);
+    line-height: 1.02;
+    margin: 0 0 28px;
+  }
+  .word {
+    display: inline-block;
+    white-space: nowrap;
+    margin-right: 0.45em;
+  }
+  .block {
+    display: inline-block;
+    animation: drop 640ms var(--ease) both;
+    animation-delay: calc(120ms + var(--i) * 55ms);
+  }
+  @keyframes drop {
+    0% {
+      transform: translateY(-0.6em);
+      opacity: 0;
+    }
+    60% {
+      opacity: 1;
+    }
+    100% {
+      transform: none;
+      opacity: 1;
+    }
+  }
+  .sub {
+    font-size: clamp(17px, 1.6vw, 20px);
+    color: var(--ink-2);
+    max-width: 34ch;
+    margin: 0 0 36px;
+    animation: fade 700ms var(--ease) 900ms both;
+  }
+  .sub strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .hl {
+    color: var(--accent);
+  }
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    animation: fade 700ms var(--ease) 1050ms both;
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
+  .portrait {
+    margin: 0;
+    justify-self: end;
+    width: min(100%, 340px);
+    animation: fade 900ms var(--ease) 600ms both;
+  }
+  .frame {
+    aspect-ratio: 1;
+    padding: 12px;
+    background: var(--bg-2);
+    border: 4px solid var(--ink);
+    box-shadow:
+      8px 8px 0 var(--accent-dim),
+      inset 0 0 0 4px var(--bg);
+  }
+  .frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    image-rendering: pixelated;
+  }
+  figcaption {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 8px 12px;
+    margin-top: 24px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .bar {
+    height: 10px;
+    background: repeating-linear-gradient(90deg, var(--accent) 0 8px, transparent 8px 10px);
+    width: calc(var(--v) * 100%);
+    transform-origin: left;
+    animation: fill 1200ms var(--ease) 1200ms both;
+  }
+  .bar.xp {
+    background: repeating-linear-gradient(90deg, var(--ink-2) 0 8px, transparent 8px 10px);
+  }
+  @keyframes fill {
+    from {
+      transform: scaleX(0);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .hero {
+      min-height: auto;
+      padding: 40px 0 64px;
+    }
+    .hero-grid {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    .portrait {
+      justify-self: start;
+      width: 200px;
+      order: -1;
+    }
+  }
+</style>

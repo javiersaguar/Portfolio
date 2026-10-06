@@ -1,0 +1,145 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+
+const links = [
+  { href: '#projects', label: 'Projects' },
+  { href: '#about', label: 'About' },
+  { href: '#activity', label: 'Activity' },
+  { href: '#contact', label: 'Contact' },
+];
+---
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a href="#top" class="brand pixel" aria-label={`${site.name}, back to top`}>
+      <span class="brand-mark" aria-hidden="true">JS</span>
+      <span class="brand-name">{site.name}</span>
+    </a>
+
+    <nav class="links" aria-label="Main">
+      {links.map((l) => <a href={l.href} class="pixel">{l.label}</a>)}
+      <a href={site.github} target="_blank" rel="noopener" class="gh" aria-label="GitHub (opens in a new tab)">
+        <Icon name="github" />
+      </a>
+    </nav>
+
+    <button class="menu-btn" aria-expanded="false" aria-controls="mobile-menu" aria-label="Menu">
+      <Icon name="list" class="open" />
+      <Icon name="x" class="close" />
+    </button>
+  </div>
+
+  <nav id="mobile-menu" class="mobile" aria-label="Mobile" hidden>
+    {links.map((l) => <a href={l.href} class="pixel">{l.label}</a>)}
+    <a href={site.github} target="_blank" rel="noopener" class="pixel">GitHub</a>
+    <a href={site.linkedin} target="_blank" rel="noopener" class="pixel">LinkedIn</a>
+  </nav>
+</header>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    font-size: 15px;
+  }
+  .brand-mark {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-size: 13px;
+    box-shadow: 3px 3px 0 var(--accent-dim);
+  }
+  .links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+  }
+  .links a {
+    font-size: 14px;
+    text-decoration: none;
+    color: var(--ink-2);
+    transition: color 160ms var(--ease);
+  }
+  .links a:hover {
+    color: var(--accent);
+  }
+  .gh {
+    display: inline-flex;
+  }
+  .gh :global(.icon) {
+    width: 20px;
+    height: 20px;
+  }
+  .menu-btn {
+    display: none;
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--ink);
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    cursor: pointer;
+  }
+  .menu-btn .close,
+  .menu-btn[aria-expanded='true'] .open {
+    display: none;
+  }
+  .menu-btn[aria-expanded='true'] .close {
+    display: inline-flex;
+  }
+  .mobile {
+    display: flex;
+    flex-direction: column;
+    padding: 8px var(--gutter) 20px;
+    border-top: 1px solid var(--line);
+  }
+  .mobile[hidden] {
+    display: none;
+  }
+  .mobile a {
+    padding: 12px 0;
+    text-decoration: none;
+    font-size: 16px;
+  }
+
+  @media (max-width: 767px) {
+    .links {
+      display: none;
+    }
+    .menu-btn {
+      display: grid;
+    }
+  }
+</style>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('.menu-btn')!;
+  const menu = document.getElementById('mobile-menu')!;
+  const set = (open: boolean) => {
+    btn.setAttribute('aria-expanded', String(open));
+    menu.hidden = !open;
+  };
+  btn.addEventListener('click', () => set(menu.hidden));
+  menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => set(false)));
+</script>
