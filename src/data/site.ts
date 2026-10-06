@@ -3,9 +3,8 @@ export const site = {
   handle: 'javiersaguar',
   domain: 'javiersaguar.dev',
   github: 'https://github.com/javiersaguar',
-  // TODO: replace with the real LinkedIn profile URL
-  linkedin: 'https://www.linkedin.com/in/javiersaguar',
-  linkedinHandle: '@javiersaguar',
+  linkedin: 'https://www.linkedin.com/in/javier-saguar-46a3a7396/',
+  linkedinHandle: 'in/javier-saguar',
   school: 'ETSIT UPM',
   degree: 'Data Engineering & Systems',
 };
