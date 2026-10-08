@@ -1,5 +1,5 @@
 ---
-import { inventory, site } from '../data/site';
+import { about, loot, rightNow, site } from '../data/site';
 
 const stats = [
   { k: 'Data', v: 9 },
@@ -8,26 +8,23 @@ const stats = [
   { k: 'Frontend', v: 5 },
 ];
 
-const skills = ['Python', 'Scala', 'SQL', 'Spark', 'Kafka', 'Airflow', 'Docker', 'Kubernetes', 'TypeScript', 'FastAPI'];
+const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const rich = (s: string) => esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 ---
 
 <section class="section" id="about">
   <div class="wrap about">
-    <div class="text reveal">
-      <h2 class="section-title">About me</h2>
-      <p>
-        I'm {site.name}, a final-year {site.degree} student at {site.school} in Madrid. Most of my
-        work lives where data meets infrastructure: pipelines that stream, store and serve, and the
-        platforms around them.
-      </p>
-      <p>
-        On the side I care about security. I build tools to audit what I deploy, and I like knowing how
-        things break before someone else finds out.
-      </p>
-      <p>
-        And sometimes I just build for fun: party games for my friends, a poker chip counter for nights
-        without chips, and a whole Pokémon fangame.
-      </p>
+    <div class="text">
+      <h2 class="section-title reveal">About me</h2>
+      <div class="dialogue reveal" style="--d:1">
+        <span class="speaker pixel" aria-hidden="true">Javier</span>
+        <div class="lines">
+          {about.map((p) => <p set:html={rich(p)} />)}
+          <p class="now"><span class="now-label pixel">Right now</span> {rightNow}</p>
+        </div>
+        <button type="button" class="skip mono" hidden>Skip ▸▸</button>
+        <span class="next" aria-hidden="true"></span>
+      </div>
     </div>
 
     <aside class="sheet reveal" style="--d:2" aria-label="Character sheet">
@@ -58,21 +55,16 @@ const skills = ['Python', 'Scala', 'SQL', 'Spark', 'Kafka', 'Airflow', 'Docker',
         }
       </dl>
 
-      <p class="label pixel">Inventory</p>
+      <p class="label pixel">Loot</p>
       <ul class="inv">
         {
-          inventory.map((it) => (
+          loot.map((it) => (
             <li>
               <span class="pixel">{it.item}</span>
               <span class="mono">{it.value}</span>
             </li>
           ))
         }
-      </ul>
-
-      <p class="label pixel">Skills</p>
-      <ul class="skills">
-        {skills.map((s) => <li class="tag">{s}</li>)}
       </ul>
 
       <p class="label pixel">Special move</p>
@@ -84,20 +76,96 @@ const skills = ['Python', 'Scala', 'SQL', 'Spark', 'Kafka', 'Airflow', 'Docker',
 <style>
   .about {
     display: grid;
-    grid-template-columns: 1fr 420px;
+    grid-template-columns: 1fr 400px;
     gap: 64px;
     align-items: start;
   }
-  .text p {
-    color: var(--ink-2);
-    font-size: 17px;
-    max-width: 58ch;
-    margin: 0 0 20px;
-  }
   .text .section-title {
-    margin-bottom: 28px;
+    margin-bottom: 40px;
   }
 
+  /* RPG dialogue box */
+  .dialogue {
+    position: relative;
+    padding: 36px 32px 44px;
+    background: var(--bg);
+    border: 4px solid var(--ink);
+    box-shadow: 8px 8px 0 var(--accent-dim);
+  }
+  .speaker {
+    position: absolute;
+    top: -20px;
+    left: 24px;
+    padding: 6px 14px;
+    font-size: 14px;
+    color: var(--accent);
+    background: var(--bg);
+    border: 4px solid var(--ink);
+  }
+  .lines p {
+    color: var(--ink-2);
+    font-size: 17px;
+    margin: 0 0 18px;
+  }
+  .lines p:last-child {
+    margin-bottom: 0;
+  }
+  .lines :global(strong) {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .now {
+    padding-top: 18px;
+    border-top: 2px dashed var(--line);
+  }
+  .now-label {
+    color: var(--accent);
+    font-size: 14px;
+    margin-right: 6px;
+  }
+  .dialogue.typing :global(.ch) {
+    visibility: hidden;
+  }
+  .dialogue.typing :global(.ch.on) {
+    visibility: visible;
+  }
+  .dialogue.typing {
+    cursor: pointer;
+  }
+  .skip {
+    position: absolute;
+    right: 16px;
+    bottom: 12px;
+    font-size: 12px;
+    color: var(--muted);
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
+  .skip:hover {
+    color: var(--accent);
+  }
+  .next {
+    position: absolute;
+    right: 20px;
+    bottom: 16px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 10px solid var(--accent);
+    animation: bob 1s step-end infinite;
+  }
+  .dialogue.typing .next {
+    display: none;
+  }
+  @keyframes bob {
+    50% {
+      transform: translateY(4px);
+    }
+  }
+
+  /* Character sheet */
   .sheet {
     background: var(--bg-2);
     border: 4px solid var(--ink);
@@ -199,14 +267,6 @@ const skills = ['Python', 'Scala', 'SQL', 'Spark', 'Kafka', 'Airflow', 'Docker',
     font-size: 12px;
     color: var(--accent);
   }
-  .skills {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 24px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
   .move {
     margin: 0;
     color: var(--ink);
@@ -216,16 +276,92 @@ const skills = ['Python', 'Scala', 'SQL', 'Spark', 'Kafka', 'Airflow', 'Docker',
   @media (max-width: 1023px) {
     .about {
       grid-template-columns: 1fr;
-      gap: 40px;
+      gap: 48px;
     }
     .sheet {
       max-width: 460px;
     }
   }
   @media (max-width: 767px) {
+    .dialogue {
+      padding: 32px 20px 44px;
+      box-shadow: 6px 6px 0 var(--accent-dim);
+    }
+    .lines p {
+      font-size: 16px;
+    }
     .sheet {
       padding: 18px;
       box-shadow: 6px 6px 0 var(--accent-dim);
     }
   }
 </style>
+
+<script>
+  import { prefersReducedMotion } from '../scripts/game';
+
+  // The text is in the HTML from the start; here each character gets its own
+  // span so it can be revealed in place without moving the layout.
+  const box = document.querySelector<HTMLElement>('.dialogue')!;
+  const skip = box.querySelector<HTMLButtonElement>('.skip')!;
+
+  function split(): HTMLElement[] {
+    const walker = document.createTreeWalker(box.querySelector('.lines')!, NodeFilter.SHOW_TEXT);
+    const nodes: Text[] = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode as Text);
+    const chars: HTMLElement[] = [];
+    for (const node of nodes) {
+      const frag = document.createDocumentFragment();
+      for (const c of node.data) {
+        const s = document.createElement('span');
+        s.className = 'ch';
+        s.textContent = c;
+        frag.append(s);
+        chars.push(s);
+      }
+      node.replaceWith(frag);
+    }
+    return chars;
+  }
+
+  function play() {
+    const chars = split();
+    box.classList.add('typing');
+    skip.hidden = false;
+    let shown = 0;
+    let done = false;
+    const start = performance.now();
+    const finish = () => {
+      if (done) return;
+      done = true;
+      box.classList.remove('typing');
+      skip.hidden = true;
+    };
+    const step = (now: number) => {
+      if (done) return;
+      const target = Math.min(chars.length, Math.floor((now - start) / 9));
+      while (shown < target) chars[shown++].classList.add('on');
+      if (shown >= chars.length) finish();
+      else requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+    box.addEventListener('click', finish);
+    skip.addEventListener('click', (e) => {
+      e.stopPropagation();
+      finish();
+    });
+  }
+
+  if (!prefersReducedMotion()) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          io.disconnect();
+          play();
+        }
+      },
+      { threshold: 0.35 },
+    );
+    io.observe(box);
+  }
+</script>

@@ -1,0 +1,96 @@
+---
+import { sprites, type SpriteName } from '../data/sprites';
+
+interface Props {
+  name: SpriteName;
+  size?: number;
+  /** Seconds to shift the animation by, so sprites shown together don't blink in sync. */
+  delay?: number;
+  class?: string;
+}
+
+const { name, size = 48, delay = 0, class: cls } = Astro.props;
+
+type Run = { x: number; y: number; w: number; c: string };
+
+// Merge horizontal runs of the same colour into one rect.
+const runs = (rows: readonly string[]): Run[] => {
+  const out: Run[] = [];
+  rows.forEach((row, y) => {
+    let x = 0;
+    while (x < row.length) {
+      const c = row[x];
+      if (c === '.') {
+        x++;
+        continue;
+      }
+      const start = x;
+      while (x < row.length && row[x] === c) x++;
+      out.push({ x: start, y, w: x - start, c });
+    }
+  });
+  return out;
+};
+
+const [a, b] = sprites[name].map(runs);
+---
+
+<svg
+  class:list={['sprite', cls]}
+  width={size}
+  height={size}
+  viewBox="0 0 12 12"
+  shape-rendering="crispEdges"
+  aria-hidden="true"
+  style={delay ? `--delay:-${delay}s` : undefined}
+>
+  <g class="fa">{a.map((r) => <rect class={`c-${r.c}`} x={r.x} y={r.y} width={r.w} height="1" />)}</g>
+  <g class="fb">{b.map((r) => <rect class={`c-${r.c}`} x={r.x} y={r.y} width={r.w} height="1" />)}</g>
+</svg>
+
+<style>
+  .sprite {
+    display: block;
+    flex-shrink: 0;
+  }
+  .c-g {
+    fill: var(--accent);
+  }
+  .c-d {
+    fill: var(--accent-dim);
+  }
+  .c-w {
+    fill: var(--ink);
+  }
+  .c-m {
+    fill: var(--muted);
+  }
+  .c-k {
+    fill: var(--line);
+  }
+  .fa {
+    animation: fa 1.2s step-end infinite;
+    animation-delay: var(--delay, 0s);
+  }
+  .fb {
+    opacity: 0;
+    animation: fb 1.2s step-end infinite;
+    animation-delay: var(--delay, 0s);
+  }
+  @keyframes fa {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+  @keyframes fb {
+    0% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+</style>

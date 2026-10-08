@@ -1,17 +1,22 @@
 ---
 import Icon from './Icon.astro';
-import { featured, site } from '../data/site';
+import { certifications, featured, sideQuests, site, stack } from '../data/site';
 
 const channels = [
   { name: 'GitHub', handle: `@${site.handle}`, href: site.github, icon: 'github' as const },
   { name: 'LinkedIn', handle: site.linkedinHandle, href: site.linkedin, icon: 'linkedin' as const },
+  { name: 'Email', handle: site.email, href: `mailto:${site.email}`, icon: 'mail' as const },
 ];
 
 const termData = {
   name: site.name,
   github: site.github,
   linkedin: site.linkedin,
+  email: site.email,
   projects: featured.map((p) => ({ name: p.name, tagline: p.tagline })),
+  quests: sideQuests.map((q) => ({ name: q.name, note: q.note })),
+  stack: stack.map((g) => ({ group: g.group, items: g.items.map((i) => i.name) })),
+  certs: certifications.map((c) => `${c.name} (${c.issuer})`),
 };
 ---
 
@@ -24,12 +29,17 @@ const termData = {
       {
         channels.map((c, i) => (
           <li class="reveal" style={`--d:${i}`}>
-            <a href={c.href} target="_blank" rel="noopener">
+            <a href={c.href} target={c.icon === 'mail' ? undefined : '_blank'} rel="noopener">
               <Icon name={c.icon} class="c-icon" />
               <span class="c-name pixel">{c.name}</span>
               <span class="c-handle mono">{c.handle}</span>
-              <Icon name="arrow" class="c-arrow" />
+              {c.icon !== 'mail' && <Icon name="arrow" class="c-arrow" />}
             </a>
+            {c.icon === 'mail' && (
+              <button type="button" class="copy" data-copy={site.email} aria-label="Copy email address">
+                <Icon name="copy" />
+              </button>
+            )}
           </li>
         ))
       }
@@ -49,7 +59,7 @@ const termData = {
         <input id="term-cmd" autocomplete="off" spellcheck="false" placeholder="type a command" aria-label="Terminal command" />
       </form>
       <div class="term-btns">
-        {['help', 'whoami', 'projects', 'contact'].map((c) => (
+        {['help', 'whoami', 'projects', 'stack', 'achievements'].map((c) => (
           <button type="button" class="mono" data-cmd={c}>{c}</button>
         ))}
       </div>
@@ -59,8 +69,11 @@ const termData = {
 
 <footer class="foot">
   <div class="wrap foot-inner mono">
-    <span>Built block by block. © {new Date().getFullYear()} {site.name}</span>
-    <a href="#top">Back to top</a>
+    <span>Built block by block in Madrid. © {new Date().getFullYear()} {site.name}</span>
+    <span class="foot-links">
+      <button type="button" class="gb-toggle mono" aria-pressed="false">Game Boy mode</button>
+      <a href="#top">Back to top</a>
+    </span>
   </div>
 </footer>
 
@@ -70,8 +83,11 @@ const termData = {
     padding: 0;
     margin: 0 0 56px;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 20px;
+  }
+  .channels li {
+    position: relative;
   }
   .channels a {
     display: grid;
@@ -113,6 +129,32 @@ const termData = {
   .channels a:hover :global(.c-arrow) {
     color: var(--accent);
     transform: translate(2px, -2px);
+  }
+  .c-handle {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .copy {
+    position: absolute;
+    top: 50%;
+    right: 18px;
+    transform: translateY(-50%);
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    color: var(--muted);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    cursor: pointer;
+    transition: color 160ms var(--ease), border-color 160ms var(--ease);
+  }
+  .copy:hover {
+    color: var(--accent);
+    border-color: var(--accent-dim);
+  }
+  .copy.done {
+    color: var(--accent);
   }
 
   .term {
@@ -221,8 +263,24 @@ const termData = {
   .foot a:hover {
     color: var(--accent);
   }
+  .foot-links {
+    display: flex;
+    gap: 24px;
+  }
+  .gb-toggle {
+    padding: 0;
+    font-size: 13px;
+    color: var(--muted);
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
+  .gb-toggle:hover,
+  .gb-toggle[aria-pressed='true'] {
+    color: var(--accent);
+  }
 
-  @media (max-width: 767px) {
+  @media (max-width: 1023px) {
     .channels {
       grid-template-columns: 1fr;
     }
@@ -230,12 +288,47 @@ const termData = {
 </style>
 
 <script>
+  import { achievements, isGameBoy, toast, toggleGameBoy, unlock, unlocked } from '../scripts/game';
+
   type Data = {
     name: string;
     github: string;
     linkedin: string;
+    email: string;
     projects: { name: string; tagline: string }[];
+    quests: { name: string; note: string }[];
+    stack: { group: string; items: string[] }[];
+    certs: string[];
   };
+
+  async function copy(text: string): Promise<boolean> {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  // Copy button on the email card.
+  document.querySelectorAll<HTMLButtonElement>('.copy').forEach((b) =>
+    b.addEventListener('click', async () => {
+      if (await copy(b.dataset.copy!)) {
+        toast('Copied', b.dataset.copy!);
+        b.classList.add('done');
+        setTimeout(() => b.classList.remove('done'), 1500);
+      }
+    }),
+  );
+
+  // Game Boy switch in the footer, kept in sync with the Konami code.
+  const gb = document.querySelector<HTMLButtonElement>('.gb-toggle')!;
+  const syncGb = () => gb.setAttribute('aria-pressed', String(isGameBoy()));
+  syncGb();
+  document.addEventListener('palette', syncGb);
+  gb.addEventListener('click', () => {
+    toast('Palette', toggleGameBoy() ? 'Game Boy mode on' : 'Game Boy mode off');
+  });
 
   const term = document.querySelector<HTMLElement>('.term')!;
   const data: Data = JSON.parse(term.dataset.term!);
@@ -255,8 +348,10 @@ const termData = {
     const p = document.createElement('p');
     const a = document.createElement('a');
     a.href = href;
-    a.target = '_blank';
-    a.rel = 'noopener';
+    if (!href.startsWith('mailto:')) {
+      a.target = '_blank';
+      a.rel = 'noopener';
+    }
     a.textContent = label;
     p.append(a);
     out.appendChild(p);
@@ -265,18 +360,52 @@ const termData = {
   const commands: Record<string, () => void> = {
     help: () =>
       print(
-        'available commands:\n  whoami     who is this\n  projects   what I have built\n  contact    where to find me\n  github     open my GitHub\n  linkedin   open my LinkedIn\n  clear      clean the screen',
+        [
+          'available commands:',
+          '  whoami        who is this',
+          '  projects      what I have built',
+          '  quests        small things for game nights',
+          '  stack         the tools I use',
+          '  certs         certifications',
+          '  contact       where to find me',
+          '  email         copy my email address',
+          '  achievements  what you have unlocked here',
+          '  snake         play snake on my contribution calendar',
+          '  gameboy       switch the palette',
+          '  github        open my GitHub',
+          '  linkedin      open my LinkedIn',
+          '  clear         clean the screen',
+        ].join('\n'),
       ),
     whoami: () =>
-      print(`${data.name}. final-year data engineering student. cybersecurity enthusiast. sometimes a builder.`),
+      print(`${data.name}. final-year data engineering student. big data projects, cybersecurity audits, apps, tools and games.`),
     projects: () => {
-      data.projects.forEach((p) => print(`> ${p.name.padEnd(24)} ${p.tagline}`));
+      data.projects.forEach((p) => print(`> ${p.name.padEnd(22)} ${p.tagline}`));
       print('scroll up to #projects for the details.', 'echo');
     },
+    quests: () => data.quests.forEach((q) => print(`> ${q.name.padEnd(14)} ${q.note}`)),
+    stack: () => data.stack.forEach((g) => print(`${(g.group.toLowerCase() + ':').padEnd(13)} ${g.items.join(', ').toLowerCase()}`)),
+    certs: () => data.certs.forEach((c) => print(`* ${c}`)),
     contact: () => {
       link(`github    ${data.github}`, data.github);
       link(`linkedin  ${data.linkedin}`, data.linkedin);
+      link(`email     ${data.email}`, `mailto:${data.email}`);
     },
+    email: () => {
+      copy(data.email).then((ok) => print(ok ? `copied ${data.email} to the clipboard.` : data.email, ok ? 'ok' : ''));
+    },
+    achievements: () => {
+      const have = unlocked();
+      const ids = Object.keys(achievements) as (keyof typeof achievements)[];
+      ids.forEach((id) => print(`${have.has(id) ? '[x]' : '[ ]'} ${achievements[id].title.padEnd(16)} ${achievements[id].hint}`));
+      print(`${have.size}/${ids.length} unlocked.`, 'echo');
+    },
+    snake: () => {
+      print('loading snake...', 'ok');
+      document.getElementById('activity')?.scrollIntoView({ behavior: 'smooth' });
+      setTimeout(() => document.querySelector<HTMLButtonElement>('#activity .play-btn')?.click(), 600);
+    },
+    gameboy: () => print(toggleGameBoy() ? 'game boy mode on.' : 'game boy mode off.', 'ok'),
     github: () => {
       print('opening github...', 'ok');
       window.open(data.github, '_blank', 'noopener');
@@ -289,7 +418,7 @@ const termData = {
       out.replaceChildren();
     },
     sudo: () => print('nice try. this incident will be reported.', 'ok'),
-    ls: () => print('projects/  about.txt  contact.txt  pokemon-panchito.sav'),
+    ls: () => print('projects/  quests/  about.txt  contact.txt  pokemon-spain.sav'),
   };
 
   const run = (raw: string) => {
@@ -303,6 +432,7 @@ const termData = {
     if (fn) fn();
     else print(`command not found: ${name}. try "help".`);
     out.scrollTop = out.scrollHeight;
+    unlock('root');
   };
 
   form.addEventListener('submit', (e) => {
@@ -318,6 +448,13 @@ const termData = {
       cursor = Math.min(cursor + 1, history.length);
       input.value = history[cursor] ?? '';
       e.preventDefault();
+    } else if (e.key === 'Tab') {
+      // Complete the command name.
+      const match = Object.keys(commands).filter((c) => c.startsWith(input.value.trim().toLowerCase()));
+      if (input.value && match.length === 1) {
+        input.value = match[0];
+        e.preventDefault();
+      }
     }
   });
   term.querySelectorAll<HTMLButtonElement>('[data-cmd]').forEach((b) =>

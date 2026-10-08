@@ -1,4 +1,5 @@
 ---
+import Icon from './Icon.astro';
 import { site } from '../data/site';
 
 type Day = { date: string; count: number; level: number };
@@ -20,6 +21,7 @@ try {
 // Pad the start so the first column begins on a Sunday, like GitHub's calendar.
 const pad = days.length ? new Date(days[0].date + 'T00:00:00Z').getUTCDay() : 0;
 const cells: (Day | null)[] = [...Array(pad).fill(null), ...days];
+while (cells.length % 7) cells.push(null);
 const best = days.reduce<Day | null>((b, d) => (!b || d.count > b.count ? d : b), null);
 const activeDays = days.filter((d) => d.count > 0).length;
 const fmt = (iso: string) =>
@@ -29,7 +31,9 @@ const fmt = (iso: string) =>
 <section class="section" id="activity">
   <div class="wrap">
     <h2 class="section-title reveal">A year in blocks</h2>
-    <p class="section-lead reveal">Every day I commit is a block. The greener, the more I shipped.</p>
+    <p class="section-lead reveal">
+      Every day I commit is a block. The greener, the more I shipped. Press play and eat them.
+    </p>
 
     {
       days.length ? (
@@ -38,7 +42,13 @@ const fmt = (iso: string) =>
             <div class="cal" role="img" aria-label={`${total} contributions in the last year`}>
               {cells.map((d, i) =>
                 d ? (
-                  <span class={`c l${d.level}`} style={`--w:${Math.floor(i / 7)}`} title={`${d.count} on ${fmt(d.date)}`} />
+                  <span
+                    class={`c l${d.level}`}
+                    style={`--w:${Math.floor(i / 7)}`}
+                    title={`${d.count} on ${fmt(d.date)}`}
+                    data-level={d.level}
+                    data-count={d.count}
+                  />
                 ) : (
                   <span class="c empty" />
                 ),
@@ -67,6 +77,13 @@ const fmt = (iso: string) =>
                 </div>
               )}
             </dl>
+            <div class="game">
+              <button type="button" class="btn play-btn">
+                <Icon name="gamepad" /> <span class="play-label">Play snake</span>
+              </button>
+              <p class="score mono" aria-live="polite" hidden></p>
+              <p class="how mono">Arrows or WASD · swipe on touch · Esc to quit</p>
+            </div>
             <div class="legend mono" aria-hidden="true">
               Less <span class="c l0" /><span class="c l1" /><span class="c l2" /><span class="c l3" /><span class="c l4" /> More
             </div>
@@ -178,6 +195,47 @@ const fmt = (iso: string) =>
   .legend .c:last-child {
     margin-right: 6px;
   }
+  /* Snake */
+  .board.playing .cal .c {
+    animation: none;
+  }
+  .board.playing .c.eaten {
+    background: #1b1d19;
+  }
+  .c.snake {
+    background: var(--ink);
+  }
+  .c.head {
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+  .board.over .c.snake {
+    background: var(--muted);
+  }
+  .game {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+  }
+  .play-btn {
+    font-size: 13px;
+    padding: 9px 14px;
+  }
+  .score {
+    margin: 0;
+    font-size: 13px;
+    color: var(--accent);
+  }
+  .how {
+    margin: 0;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .board:not(.playing) .how {
+    display: none;
+  }
+
   .empty-state {
     color: var(--muted);
   }
@@ -200,7 +258,159 @@ const fmt = (iso: string) =>
 </style>
 
 <script>
+  import { unlock } from '../scripts/game';
+
   // On narrow screens, start the calendar at the most recent weeks.
   const scroller = document.querySelector<HTMLElement>('#activity .scroller');
   if (scroller) scroller.scrollLeft = scroller.scrollWidth;
+
+  // Snake on the contribution calendar. The grid is column-major, seven rows
+  // per week, and it wraps at the edges. Green blocks are food.
+  const board = document.querySelector<HTMLElement>('#activity .board');
+  if (board && scroller) {
+    type P = { x: number; y: number };
+    const cells = [...board.querySelectorAll<HTMLElement>('.cal .c')];
+    const ROWS = 7;
+    const COLS = cells.length / ROWS;
+    const button = board.querySelector<HTMLButtonElement>('.play-btn')!;
+    const label = button.querySelector<HTMLElement>('.play-label')!;
+    const score = board.querySelector<HTMLElement>('.score')!;
+    const at = (p: P) => cells[p.x * ROWS + p.y];
+    const isFood = (c: HTMLElement) => Number(c.dataset.level ?? 0) > 0 && !c.classList.contains('eaten');
+
+    let snake: P[] = [];
+    let dir: P = { x: 1, y: 0 };
+    let queued: P[] = [];
+    let timer: number | undefined;
+    let blocks = 0;
+    let commits = 0;
+    let touch: P | null = null;
+
+    const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
+    const tally = () => `${plural(blocks, 'block')} · ${plural(commits, 'contribution')} eaten`;
+
+    const show = (text: string) => {
+      score.hidden = false;
+      score.textContent = text;
+    };
+
+    const draw = () => {
+      cells.forEach((c) => c.classList.remove('snake', 'head'));
+      snake.forEach((p, i) => at(p).classList.add(i === 0 ? 'head' : 'snake'));
+      // Keep the head in view when the calendar is scrolled sideways.
+      const head = at(snake[0]);
+      const left = head.offsetLeft - scroller.scrollLeft;
+      if (left < 40 || left > scroller.clientWidth - 40) {
+        scroller.scrollLeft = head.offsetLeft - scroller.clientWidth / 2;
+      }
+    };
+
+    const clear = () => {
+      cells.forEach((c) => c.classList.remove('eaten', 'snake', 'head'));
+      board.classList.remove('playing', 'over');
+    };
+
+    const stop = (message?: string) => {
+      if (timer !== undefined) clearInterval(timer);
+      timer = undefined;
+      label.textContent = 'Play again';
+      if (message) {
+        board.classList.add('over');
+        show(message);
+      } else {
+        clear();
+        score.hidden = true;
+      }
+    };
+
+    const tick = () => {
+      if (queued.length) dir = queued.shift()!;
+      const head = { x: (snake[0].x + dir.x + COLS) % COLS, y: (snake[0].y + dir.y + ROWS) % ROWS };
+      if (snake.some((p) => p.x === head.x && p.y === head.y)) {
+        stop(`Game over · ${tally()}`);
+        return;
+      }
+      snake.unshift(head);
+      const cell = at(head);
+      if (isFood(cell)) {
+        cell.classList.add('eaten');
+        blocks++;
+        commits += Number(cell.dataset.count ?? 0);
+        show(tally());
+        if (blocks === 10) unlock('snake');
+        if (!cells.some(isFood)) {
+          draw();
+          stop(`You ate the whole year · ${plural(commits, 'contribution')}`);
+          return;
+        }
+      } else {
+        snake.pop();
+      }
+      draw();
+    };
+
+    const start = () => {
+      clear();
+      board.classList.add('playing');
+      blocks = 0;
+      commits = 0;
+      dir = { x: 1, y: 0 };
+      queued = [];
+      // Start where the visible part of the calendar begins.
+      const step = cells[ROWS].offsetLeft - cells[0].offsetLeft;
+      const x = Math.min(COLS - 1, Math.max(3, Math.round(scroller.scrollLeft / step) + 3));
+      snake = [
+        { x, y: 3 },
+        { x: x - 1, y: 3 },
+        { x: x - 2, y: 3 },
+      ];
+      show('0 blocks · go!');
+      label.textContent = 'Quit';
+      draw();
+      timer = window.setInterval(tick, 115);
+    };
+
+    const turn = (d: P) => {
+      const last = queued[queued.length - 1] ?? dir;
+      if ((d.x === -last.x && d.y === -last.y) || (d.x === last.x && d.y === last.y)) return;
+      if (queued.length < 3) queued.push(d);
+    };
+
+    const keys: Record<string, P> = {
+      ArrowUp: { x: 0, y: -1 },
+      ArrowDown: { x: 0, y: 1 },
+      ArrowLeft: { x: -1, y: 0 },
+      ArrowRight: { x: 1, y: 0 },
+      w: { x: 0, y: -1 },
+      s: { x: 0, y: 1 },
+      a: { x: -1, y: 0 },
+      d: { x: 1, y: 0 },
+    };
+
+    button.addEventListener('click', () => (timer === undefined ? start() : stop()));
+    addEventListener('keydown', (e) => {
+      if (timer === undefined) return;
+      if (e.key === 'Escape') return stop();
+      const d = keys[e.key.length === 1 ? e.key.toLowerCase() : e.key];
+      if (d) {
+        e.preventDefault();
+        turn(d);
+      }
+    });
+    board.addEventListener(
+      'touchstart',
+      (e) => {
+        if (timer !== undefined) touch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      },
+      { passive: true },
+    );
+    board.addEventListener('touchend', (e) => {
+      if (timer === undefined || !touch) return;
+      const dx = e.changedTouches[0].clientX - touch.x;
+      const dy = e.changedTouches[0].clientY - touch.y;
+      touch = null;
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < 20) return;
+      turn(Math.abs(dx) > Math.abs(dy) ? { x: Math.sign(dx), y: 0 } : { x: 0, y: Math.sign(dy) });
+    });
+  }
 </script>

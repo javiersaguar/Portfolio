@@ -1,6 +1,11 @@
 ---
 import Icon from './Icon.astro';
-import { featured, sideQuests, site } from '../data/site';
+import Sprite from './Sprite.astro';
+import { categories, coursework, featured, sideQuests, site } from '../data/site';
+
+// Three wide cards in a zigzag fill a three-column grid without gaps.
+const wide = new Set([0, 3, 4]);
+const count = (id: string) => (id === 'all' ? featured.length : featured.filter((p) => p.tags.includes(id as never)).length);
 ---
 
 <section class="section" id="projects">
@@ -10,12 +15,25 @@ import { featured, sideQuests, site } from '../data/site';
       Data platforms, security tooling and a game. Built at hackathons, for class, and on weekends.
     </p>
 
+    <div class="filters reveal" role="group" aria-label="Filter projects">
+      {
+        categories.map((c, i) => (
+          <button type="button" class="filter pixel" data-filter={c.id} aria-pressed={i === 0 ? 'true' : 'false'}>
+            {c.label} <span class="count mono">{count(c.id)}</span>
+          </button>
+        ))
+      }
+    </div>
+
     <div class="grid">
       {
         featured.map((p, i) => (
-          <article class:list={['card', 'reveal', { big: i === 0 }]} style={`--d:${i}`}>
+          <article class:list={['card', 'reveal', { big: wide.has(i) }]} data-tags={p.tags.join(' ')} style={`--d:${i % 3}`}>
             <div class="card-top">
-              <span class="context mono">{p.context}</span>
+              <div class="who">
+                <Sprite name={p.sprite} size={wide.has(i) ? 56 : 44} delay={i * 0.2} />
+                <span class="context mono">{p.context}</span>
+              </div>
               <div class="stat">
                 <span class="stat-value pixel">{p.stat.value}</span>
                 <span class="stat-label">{p.stat.label}</span>
@@ -32,7 +50,7 @@ import { featured, sideQuests, site } from '../data/site';
             <div class="actions">
               {p.url && (
                 <a href={p.url} target="_blank" rel="noopener" class="link live">
-                  Live <Icon name="arrow" />
+                  <Icon name="play" /> Live demo
                 </a>
               )}
               <a href={`${site.github}/${p.repo}`} target="_blank" rel="noopener" class="link">
@@ -43,25 +61,87 @@ import { featured, sideQuests, site } from '../data/site';
         ))
       }
     </div>
+    <p class="none mono" hidden>Nothing here yet.</p>
 
-    <h3 class="quests-title pixel reveal">Side quests</h3>
+    <h3 class="sub-title pixel reveal">Side quests</h3>
+    <p class="sub-lead reveal">Small things I made for game nights. All of them are live.</p>
     <ul class="quests">
       {
         sideQuests.map((q, i) => (
           <li class="reveal" style={`--d:${i}`}>
-            <a href={q.url} target="_blank" rel="noopener">
-              <span class="q-name pixel">{q.name}</span>
-              <span class="q-note">{q.note}</span>
-              <Icon name="arrow" class="q-arrow" />
+            <a href={q.url} target="_blank" rel="noopener" class="quest">
+              <Sprite name={q.sprite} size={44} delay={i * 0.3} />
+              <span class="q-body">
+                <span class="q-tag mono">Side quest</span>
+                <span class="q-name pixel">{q.name}</span>
+                <span class="q-note">{q.note}</span>
+              </span>
+              <span class="q-play pixel">
+                Play <Icon name="play" />
+              </span>
             </a>
           </li>
         ))
       }
     </ul>
+
+    <div class="class-panel reveal">
+      <p class="class-title pixel">Also built for class</p>
+      <ul class="class-list">
+        {
+          coursework.map((c, i) => (
+            <li>
+              <Sprite name={c.sprite} size={44} delay={i * 0.4} />
+              <div>
+                <p class="c-name pixel">{c.name}</p>
+                <p class="c-note">{c.note}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
   </div>
 </section>
 
 <style>
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: -16px 0 32px;
+  }
+  .filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    font-size: 14px;
+    color: var(--ink-2);
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    cursor: pointer;
+    transition:
+      color 160ms var(--ease),
+      border-color 160ms var(--ease),
+      transform 160ms var(--ease),
+      box-shadow 160ms var(--ease);
+  }
+  .filter:hover {
+    color: var(--ink);
+    border-color: var(--accent-dim);
+  }
+  .filter[aria-pressed='true'] {
+    color: var(--accent-ink);
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 3px 3px 0 var(--accent-dim);
+  }
+  .count {
+    font-size: 11px;
+    opacity: 0.7;
+  }
+
   .grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -85,6 +165,9 @@ import { featured, sideQuests, site } from '../data/site';
     transform: translate(-3px, -3px);
     box-shadow: 6px 6px 0 var(--accent-dim);
   }
+  .card[hidden] {
+    display: none;
+  }
   .card.big {
     grid-column: span 2;
     background:
@@ -92,12 +175,28 @@ import { featured, sideQuests, site } from '../data/site';
       repeating-linear-gradient(0deg, transparent 0 15px, color-mix(in srgb, var(--accent) 5%, transparent) 15px 16px),
       var(--bg-2);
   }
+  .grid.filtered .card.big {
+    grid-column: auto;
+  }
+  .grid.filtered .card {
+    animation: pop-in 320ms var(--ease) both;
+  }
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
   .card-top {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     gap: 16px;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
+  }
+  .who {
+    display: grid;
+    gap: 14px;
   }
   .context {
     font-size: 12px;
@@ -110,12 +209,12 @@ import { featured, sideQuests, site } from '../data/site';
     align-items: flex-end;
   }
   .stat-value {
-    font-size: 32px;
+    font-size: 30px;
     line-height: 1;
     color: var(--accent);
   }
   .big .stat-value {
-    font-size: 56px;
+    font-size: 52px;
   }
   .stat-label {
     font-size: 12px;
@@ -172,15 +271,22 @@ import { featured, sideQuests, site } from '../data/site';
   .link.live {
     color: var(--accent);
   }
-  .link .icon {
+  .link :global(.icon) {
     width: 16px;
     height: 16px;
   }
+  .none {
+    color: var(--muted);
+  }
 
-  .quests-title {
+  .sub-title {
     font-weight: 400;
-    font-size: 22px;
-    margin: 72px 0 20px;
+    font-size: 24px;
+    margin: 88px 0 6px;
+  }
+  .sub-lead {
+    color: var(--muted);
+    margin: 0 0 24px;
   }
   .quests {
     list-style: none;
@@ -188,45 +294,105 @@ import { featured, sideQuests, site } from '../data/site';
     margin: 0;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0 40px;
+    gap: 16px;
   }
-  .quests a {
+  .quest {
     display: grid;
     grid-template-columns: auto 1fr auto;
-    align-items: baseline;
-    gap: 16px;
-    padding: 16px 0;
+    align-items: center;
+    gap: 18px;
+    padding: 18px 20px;
     text-decoration: none;
-    border-top: 1px dashed var(--line);
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    transition:
+      border-color 200ms var(--ease),
+      transform 200ms var(--ease),
+      box-shadow 200ms var(--ease);
+  }
+  .quest:hover {
+    border-color: var(--accent-dim);
+    transform: translate(-3px, -3px);
+    box-shadow: 6px 6px 0 var(--accent-dim);
+  }
+  .q-body {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+  .q-tag {
+    font-size: 11px;
+    color: var(--muted);
   }
   .q-name {
-    font-size: 15px;
-    transition: color 160ms var(--ease);
+    font-size: 18px;
   }
   .q-note {
-    color: var(--muted);
+    color: var(--ink-2);
     font-size: 14px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
-  .quests :global(.q-arrow) {
-    width: 16px;
-    height: 16px;
-    color: var(--muted);
-    transition: transform 160ms var(--ease), color 160ms var(--ease);
-  }
-  .quests a:hover .q-name,
-  .quests a:hover :global(.q-arrow) {
+  .q-play {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
     color: var(--accent);
   }
-  .quests a:hover :global(.q-arrow) {
-    transform: translate(2px, -2px);
+  .q-play :global(.icon) {
+    width: 14px;
+    height: 14px;
+  }
+  .quest:hover .q-play {
+    animation: blink 0.8s step-end infinite;
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  .class-panel {
+    margin-top: 40px;
+    padding: 24px 28px 28px;
+    border: 1px dashed var(--line);
+  }
+  .class-title {
+    margin: 0 0 20px;
+    font-size: 14px;
+    color: var(--accent);
+  }
+  .class-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+  .class-list li {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .c-name {
+    margin: 0 0 4px;
+    font-size: 16px;
+  }
+  .c-note {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
   }
 
   @media (max-width: 1023px) {
     .grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .card.big {
+      grid-column: auto;
+    }
+    .class-list {
+      grid-template-columns: 1fr;
     }
   }
   @media (max-width: 767px) {
@@ -234,21 +400,46 @@ import { featured, sideQuests, site } from '../data/site';
     .quests {
       grid-template-columns: 1fr;
     }
-    .card.big {
-      grid-column: auto;
-    }
     .card {
       padding: 22px;
     }
     .big .stat-value {
       font-size: 40px;
     }
-    .quests a {
-      grid-template-columns: 1fr auto;
+    .quest {
+      grid-template-columns: auto 1fr;
     }
-    .q-note {
-      grid-row: 2;
-      white-space: normal;
+    .q-play {
+      grid-column: 2;
     }
   }
 </style>
+
+<script>
+  import { unlock } from '../scripts/game';
+
+  const grid = document.querySelector<HTMLElement>('#projects .grid')!;
+  const cards = [...grid.querySelectorAll<HTMLElement>('.card')];
+  const none = document.querySelector<HTMLElement>('#projects .none')!;
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>('#projects .filter')];
+
+  buttons.forEach((btn) =>
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.filter!;
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      let shown = 0;
+      for (const card of cards) {
+        const match = id === 'all' || card.dataset.tags!.split(' ').includes(id);
+        card.hidden = !match;
+        card.classList.add('in');
+        if (match) shown++;
+      }
+      // Restart the pop-in on every change.
+      grid.classList.remove('filtered');
+      void grid.offsetWidth;
+      grid.classList.toggle('filtered', id !== 'all');
+      none.hidden = shown > 0;
+      if (id !== 'all') unlock('filter');
+    }),
+  );
+</script>

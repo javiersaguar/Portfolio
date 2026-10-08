@@ -1,0 +1,295 @@
+---
+import { stack } from '../data/site';
+import { brandIcons } from '../data/brand-icons';
+
+const total = stack.reduce((n, g) => n + g.items.length, 0);
+const first = stack[0].items[0];
+let index = 0;
+---
+
+<section class="section" id="stack">
+  <div class="wrap">
+    <h2 class="section-title reveal">Tech stack</h2>
+    <p class="section-lead reveal">
+      An inventory, not a badge wall. Hover an item or move with the arrow keys to see where I used it.
+    </p>
+
+    <div class="inventory reveal">
+      <div class="inv-head">
+        <span class="pixel inv-title">Inventory</span>
+        <span class="mono inv-count">{total} items</span>
+      </div>
+
+      <div class="rows">
+        {
+          stack.map((g, r) => (
+            <div class="row">
+              <span class="group pixel">{g.group}</span>
+              <ul class="slots" aria-label={g.group}>
+                {g.items.map((it, c) => {
+                  const i = index++;
+                  return (
+                    <li>
+                      <button
+                        type="button"
+                        class:list={['slot', { sel: i === 0 }]}
+                        tabindex={i === 0 ? 0 : -1}
+                        data-i={i}
+                        data-row={r}
+                        data-col={c}
+                        data-name={it.name}
+                        data-group={g.group}
+                        data-used={it.used}
+                        data-icon={brandIcons[it.icon]}
+                        aria-label={`${it.name}: ${it.used}`}
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d={brandIcons[it.icon]} />
+                        </svg>
+                        <span class="slot-name mono">{it.name}</span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="desc" aria-live="polite">
+        <svg class="desc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d={brandIcons[first.icon]} /></svg>
+        <div>
+          <p class="desc-name pixel">{first.name} <span class="desc-group mono">{stack[0].group}</span></p>
+          <p class="desc-used">{first.used}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .inventory {
+    background: var(--bg);
+    border: 2px solid var(--line);
+    box-shadow: 8px 8px 0 var(--accent-dim);
+    padding: 24px 28px 28px;
+  }
+  .inv-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 20px;
+  }
+  .inv-title {
+    color: var(--accent);
+    font-size: 16px;
+  }
+  .inv-count {
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .rows {
+    display: grid;
+    gap: 14px;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    align-items: center;
+    gap: 16px;
+  }
+  .group {
+    font-size: 13px;
+    color: var(--ink-2);
+  }
+  .slots {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .slot {
+    position: relative;
+    width: 84px;
+    height: 84px;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 8px;
+    padding: 0;
+    color: var(--ink-2);
+    background: var(--bg-2);
+    border: 2px solid var(--line);
+    cursor: pointer;
+    transition: color 120ms var(--ease);
+  }
+  .slot svg {
+    width: 30px;
+    height: 30px;
+    fill: currentColor;
+  }
+  .slot-name {
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .slot:focus-visible {
+    outline: none;
+  }
+  .slot.sel {
+    color: var(--accent);
+  }
+  /* Pixel corner brackets around the selected slot */
+  .slot.sel::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    pointer-events: none;
+    --c: var(--accent);
+    background:
+      linear-gradient(var(--c), var(--c)) top left / 16px 4px,
+      linear-gradient(var(--c), var(--c)) top left / 4px 16px,
+      linear-gradient(var(--c), var(--c)) top right / 16px 4px,
+      linear-gradient(var(--c), var(--c)) top right / 4px 16px,
+      linear-gradient(var(--c), var(--c)) bottom left / 16px 4px,
+      linear-gradient(var(--c), var(--c)) bottom left / 4px 16px,
+      linear-gradient(var(--c), var(--c)) bottom right / 16px 4px,
+      linear-gradient(var(--c), var(--c)) bottom right / 4px 16px;
+    background-repeat: no-repeat;
+  }
+
+  .desc {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    margin-top: 24px;
+    padding: 16px 20px;
+    min-height: 88px;
+    background: var(--bg-2);
+    border: 2px dashed var(--line);
+  }
+  .desc-icon {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    fill: var(--accent);
+  }
+  .desc p {
+    margin: 0;
+  }
+  .desc-name {
+    font-size: 18px;
+    margin-bottom: 4px !important;
+  }
+  .desc-group {
+    font-size: 12px;
+    color: var(--muted);
+    margin-left: 8px;
+  }
+  .desc-used {
+    color: var(--ink-2);
+    font-size: 15px;
+  }
+
+  @media (max-width: 767px) {
+    .inventory {
+      padding: 18px;
+      box-shadow: 6px 6px 0 var(--accent-dim);
+    }
+    .row {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .slot {
+      width: 68px;
+      height: 68px;
+    }
+    .slot svg {
+      width: 24px;
+      height: 24px;
+    }
+    .slot-name {
+      font-size: 10px;
+    }
+  }
+</style>
+
+<script>
+  import { prefersReducedMotion, unlock } from '../scripts/game';
+
+  const root = document.querySelector<HTMLElement>('#stack .inventory')!;
+  const slots = [...root.querySelectorAll<HTMLButtonElement>('.slot')];
+  const icon = root.querySelector<SVGPathElement>('.desc-icon path')!;
+  const name = root.querySelector<HTMLElement>('.desc-name')!;
+  const used = root.querySelector<HTMLElement>('.desc-used')!;
+  let current = 0;
+
+  const select = (i: number, focus = false) => {
+    slots[current].classList.remove('sel');
+    slots[current].tabIndex = -1;
+    current = i;
+    const s = slots[i];
+    s.classList.add('sel');
+    s.tabIndex = 0;
+    if (focus) s.focus();
+    icon.setAttribute('d', s.dataset.icon!);
+    name.firstChild!.textContent = `${s.dataset.name} `;
+    name.querySelector('.desc-group')!.textContent = s.dataset.group!;
+    used.textContent = s.dataset.used!;
+  };
+
+  // Until someone touches it, the cursor walks the inventory by itself.
+  let auto: number | undefined;
+  const stopAuto = () => {
+    if (auto !== undefined) clearInterval(auto);
+    auto = undefined;
+  };
+  const byUser = (i: number, focus = false) => {
+    stopAuto();
+    select(i, focus);
+    unlock('inventory');
+  };
+
+  slots.forEach((s, i) => {
+    s.addEventListener('pointerenter', () => byUser(i));
+    s.addEventListener('click', () => byUser(i));
+    s.addEventListener('focus', () => {
+      if (current !== i) byUser(i);
+    });
+  });
+
+  // Arrow keys: left and right through the list, up and down between rows.
+  root.addEventListener('keydown', (e) => {
+    const s = slots[current];
+    const row = Number(s.dataset.row);
+    const col = Number(s.dataset.col);
+    const inRow = (r: number) => slots.filter((x) => Number(x.dataset.row) === r);
+    let next: number | undefined;
+    if (e.key === 'ArrowRight') next = Math.min(slots.length - 1, current + 1);
+    else if (e.key === 'ArrowLeft') next = Math.max(0, current - 1);
+    else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      const target = inRow(row + (e.key === 'ArrowDown' ? 1 : -1));
+      if (target.length) next = Number(target[Math.min(col, target.length - 1)].dataset.i);
+    } else if (e.key === 'Home') next = 0;
+    else if (e.key === 'End') next = slots.length - 1;
+    if (next !== undefined) {
+      e.preventDefault();
+      byUser(next, true);
+    }
+  });
+
+  if (!prefersReducedMotion()) {
+    const io = new IntersectionObserver((entries) => {
+      const visible = entries.some((e) => e.isIntersecting);
+      if (visible && auto === undefined && !root.dataset.touched) {
+        auto = window.setInterval(() => select((current + 1) % slots.length), 1400);
+      } else if (!visible) stopAuto();
+    });
+    io.observe(root);
+    root.addEventListener('pointerdown', () => (root.dataset.touched = '1'));
+    root.addEventListener('keydown', () => (root.dataset.touched = '1'));
+    root.addEventListener('pointerenter', () => (root.dataset.touched = '1'));
+  }
+</script>

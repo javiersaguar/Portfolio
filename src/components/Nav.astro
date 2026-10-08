@@ -5,6 +5,7 @@ import { site } from '../data/site';
 const links = [
   { href: '#projects', label: 'Projects' },
   { href: '#about', label: 'About' },
+  { href: '#stack', label: 'Stack' },
   { href: '#activity', label: 'Activity' },
   { href: '#contact', label: 'Contact' },
 ];
@@ -35,6 +36,8 @@ const links = [
     <a href={site.github} target="_blank" rel="noopener" class="pixel">GitHub</a>
     <a href={site.linkedin} target="_blank" rel="noopener" class="pixel">LinkedIn</a>
   </nav>
+
+  <div class="xp" aria-hidden="true"><span class="xp-fill"></span></div>
 </header>
 
 <style>
@@ -101,11 +104,12 @@ const links = [
     place-items: center;
     cursor: pointer;
   }
-  .menu-btn .close,
-  .menu-btn[aria-expanded='true'] .open {
+  /* The icons are rendered by Icon.astro, outside this component's scope. */
+  .menu-btn :global(.close),
+  .menu-btn[aria-expanded='true'] :global(.open) {
     display: none;
   }
-  .menu-btn[aria-expanded='true'] .close {
+  .menu-btn[aria-expanded='true'] :global(.close) {
     display: inline-flex;
   }
   .mobile {
@@ -121,6 +125,23 @@ const links = [
     padding: 12px 0;
     text-decoration: none;
     font-size: 16px;
+  }
+
+  /* Scroll progress, drawn as an XP bar under the nav */
+  .xp {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 4px;
+    pointer-events: none;
+  }
+  .xp-fill {
+    display: block;
+    height: 100%;
+    background: repeating-linear-gradient(90deg, var(--accent) 0 12px, transparent 12px 16px);
+    transform: scaleX(var(--xp, 0));
+    transform-origin: left;
   }
 
   @media (max-width: 767px) {
@@ -142,4 +163,23 @@ const links = [
   };
   btn.addEventListener('click', () => set(menu.hidden));
   menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => set(false)));
+
+  const xp = document.querySelector<HTMLElement>('.xp-fill')!;
+  let queued = false;
+  const update = () => {
+    queued = false;
+    const max = document.documentElement.scrollHeight - innerHeight;
+    xp.style.setProperty('--xp', String(max > 0 ? Math.min(1, scrollY / max) : 0));
+  };
+  addEventListener(
+    'scroll',
+    () => {
+      if (!queued) {
+        queued = true;
+        requestAnimationFrame(update);
+      }
+    },
+    { passive: true },
+  );
+  update();
 </script>

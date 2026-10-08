@@ -9,7 +9,7 @@ interface Props {
 
 const {
   title = `${site.name} · Data Engineer`,
-  description = 'Final-year Data Engineering student at ETSIT UPM. Cybersecurity enthusiast, sometimes a builder.',
+  description = 'Final-year Data Engineering student at ETSIT UPM. Big Data projects, cybersecurity audits, and apps, tools and games built end to end.',
 } = Astro.props;
 ---
 
@@ -27,11 +27,16 @@ const {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script is:inline>
       document.documentElement.classList.remove('no-js');
+      try {
+        if (localStorage.getItem('js-palette') === 'gb') document.documentElement.dataset.palette = 'gb';
+      } catch (e) {}
     </script>
   </head>
   <body>
     <slot />
     <script>
+      import { toast, toggleGameBoy, unlock } from '../scripts/game';
+
       const io = new IntersectionObserver(
         (entries) => {
           for (const e of entries) {
@@ -44,6 +49,31 @@ const {
         { threshold: 0.15, rootMargin: '0px 0px -40px 0px' },
       );
       document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+      // Reaching the footer counts as exploring the whole page.
+      const foot = document.querySelector('.foot');
+      if (foot) {
+        const end = new IntersectionObserver((entries) => {
+          if (entries.some((e) => e.isIntersecting)) {
+            unlock('explorer');
+            end.disconnect();
+          }
+        });
+        end.observe(foot);
+      }
+
+      // Konami code: Game Boy palette.
+      const code = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+      let pos = 0;
+      addEventListener('keydown', (e) => {
+        const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+        pos = key === code[pos] ? pos + 1 : key === code[0] ? 1 : 0;
+        if (pos === code.length) {
+          pos = 0;
+          toast('Cheat code', toggleGameBoy() ? 'Game Boy mode on' : 'Game Boy mode off');
+          unlock('konami');
+        }
+      });
     </script>
   </body>
 </html>

@@ -1,11 +1,13 @@
 ---
 import Icon from './Icon.astro';
-import { site } from '../data/site';
+import { site, skillBars, typedLines } from '../data/site';
 
 const words = site.name.split(' ').map((w, wi, all) => {
   const offset = all.slice(0, wi).join('').length + wi;
   return [...w].map((ch, i) => ({ ch, i: offset + i }));
 });
+
+const PIPS = 20;
 ---
 
 <section class="hero" id="top">
@@ -24,24 +26,38 @@ const words = site.name.split(' ').map((w, wi, all) => {
         }
       </h1>
       <p class="sub">
-        Final-year <strong>Data Engineering</strong> student at {site.school}.
-        Cybersecurity enthusiast. <span class="hl">Sometimes a builder.</span>
+        Final-year <strong>Data Engineering</strong> student at {site.school}, Madrid.
+      </p>
+      <p class="typed pixel" data-lines={JSON.stringify(typedLines)}>
+        <span class="prompt" aria-hidden="true">&gt;</span>
+        <span class="typed-text" aria-hidden="true">{typedLines[0]}</span><span class="caret" aria-hidden="true"
+        ></span>
+        <span class="sr-only">{typedLines.join('. ')}.</span>
       </p>
       <div class="ctas">
         <a href="#projects" class="btn">See projects <Icon name="down" /></a>
-        <a href={site.github} target="_blank" rel="noopener" class="btn ghost">
-          <Icon name="github" /> GitHub
-        </a>
+        <a href={site.linkedin} target="_blank" rel="noopener" class="btn ghost"><Icon name="linkedin" /> LinkedIn</a>
+        <a href={`mailto:${site.email}`} class="btn ghost"><Icon name="mail" /> Email</a>
       </div>
     </div>
 
     <figure class="portrait">
       <div class="frame">
-        <img src="/avatar.jpg" width="540" height="540" alt={`Portrait of ${site.name}`} />
+        <img src="/avatar.jpg" width="540" height="540" alt={`${site.name} giving a talk`} />
       </div>
-      <figcaption class="mono">
-        <span>HP</span><span class="bar" style="--v:0.86"></span>
-        <span>XP</span><span class="bar xp" style="--v:0.62"></span>
+      <figcaption class="bars">
+        {
+          skillBars.map((label, b) => (
+            <div class="skill">
+              <span class="pixel skill-label">{label}</span>
+              <span class="pips" data-bar={b} role="img" aria-label={`${label}: max level`}>
+                {Array.from({ length: PIPS }, (_, i) => (
+                  <span class="pip on" style={`--i:${i}`} />
+                ))}
+              </span>
+            </div>
+          ))
+        }
       </figcaption>
     </figure>
   </div>
@@ -97,22 +113,49 @@ const words = site.name.split(' ').map((w, wi, all) => {
   .sub {
     font-size: clamp(17px, 1.6vw, 20px);
     color: var(--ink-2);
-    max-width: 34ch;
-    margin: 0 0 36px;
+    max-width: 40ch;
+    margin: 0 0 14px;
     animation: fade 700ms var(--ease) 900ms both;
   }
   .sub strong {
     color: var(--ink);
     font-weight: 600;
   }
-  .hl {
+
+  .typed {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 1.5em;
+    margin: 0 0 36px;
+    font-size: clamp(15px, 1.7vw, 20px);
+    color: var(--ink);
+    animation: fade 700ms var(--ease) 1000ms both;
+  }
+  .prompt {
     color: var(--accent);
   }
+  .typed-text {
+    white-space: pre;
+  }
+  .caret {
+    width: 0.55em;
+    height: 1.05em;
+    margin-left: -6px;
+    background: var(--accent);
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
   .ctas {
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
-    animation: fade 700ms var(--ease) 1050ms both;
+    animation: fade 700ms var(--ease) 1100ms both;
   }
   @keyframes fade {
     from {
@@ -124,7 +167,7 @@ const words = site.name.split(' ').map((w, wi, all) => {
   .portrait {
     margin: 0;
     justify-self: end;
-    width: min(100%, 340px);
+    width: min(100%, 360px);
     animation: fade 900ms var(--ease) 600ms both;
   }
   .frame {
@@ -141,28 +184,47 @@ const words = site.name.split(' ').map((w, wi, all) => {
     height: 100%;
     object-fit: cover;
   }
-  figcaption {
+
+  .bars {
     display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: center;
-    gap: 8px 12px;
-    margin-top: 24px;
+    gap: 14px;
+    margin-top: 28px;
+  }
+  .skill {
+    display: grid;
+    gap: 6px;
+  }
+  .skill-label {
     font-size: 12px;
-    color: var(--muted);
+    color: var(--ink-2);
   }
-  .bar {
+  .pips {
+    display: grid;
+    grid-template-columns: repeat(20, 1fr);
+    gap: 3px;
+    transition: filter 300ms var(--ease);
+  }
+  .pip {
     height: 10px;
-    background: repeating-linear-gradient(90deg, var(--accent) 0 8px, transparent 8px 10px);
-    width: calc(var(--v) * 100%);
-    transform-origin: left;
-    animation: fill 1200ms var(--ease) 1200ms both;
+    background: var(--line);
   }
-  .bar.xp {
-    background: repeating-linear-gradient(90deg, var(--ink-2) 0 8px, transparent 8px 10px);
+  .pip.on {
+    background: var(--accent);
   }
-  @keyframes fill {
-    from {
-      transform: scaleX(0);
+  /* At the top of the bar: a glow and a light sweeping across it. */
+  .pips.max {
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 65%, transparent));
+  }
+  .pips.max .pip {
+    animation: shine 900ms step-end infinite;
+    animation-delay: calc(var(--i) * 25ms);
+  }
+  @keyframes shine {
+    0% {
+      background: color-mix(in srgb, var(--accent) 45%, white);
+    }
+    14% {
+      background: var(--accent);
     }
   }
 
@@ -177,8 +239,66 @@ const words = site.name.split(' ').map((w, wi, all) => {
     }
     .portrait {
       justify-self: start;
-      width: 200px;
+      width: min(100%, 280px);
       order: -1;
+    }
+    .typed {
+      min-height: 3em;
+      align-items: flex-start;
+    }
+    .typed-text {
+      white-space: normal;
     }
   }
 </style>
+
+<script>
+  import { prefersReducedMotion } from '../scripts/game';
+
+  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+  // Typed lines: type, hold, erase, next.
+  const typed = document.querySelector<HTMLElement>('.typed')!;
+  const text = typed.querySelector<HTMLElement>('.typed-text')!;
+  const lines: string[] = JSON.parse(typed.dataset.lines!);
+
+  async function typeLoop() {
+    for (let n = 0; ; n = (n + 1) % lines.length) {
+      const line = lines[n];
+      for (let k = 1; k <= line.length; k++) {
+        text.textContent = line.slice(0, k);
+        await sleep(70);
+      }
+      await sleep(1900);
+      for (let k = line.length - 1; k >= 0; k--) {
+        text.textContent = line.slice(0, k);
+        await sleep(28);
+      }
+      await sleep(350);
+    }
+  }
+
+  // Skill bars: fill one pip at a time, glow at the top for three seconds,
+  // drop to zero at once and start again.
+  async function barLoop(bar: HTMLElement, startDelay: number) {
+    const pips = [...bar.querySelectorAll<HTMLElement>('.pip')];
+    await sleep(startDelay);
+    for (;;) {
+      bar.classList.remove('max');
+      pips.forEach((p) => p.classList.remove('on'));
+      await sleep(450);
+      for (const p of pips) {
+        p.classList.add('on');
+        await sleep(90);
+      }
+      bar.classList.add('max');
+      await sleep(3000);
+    }
+  }
+
+  if (!prefersReducedMotion()) {
+    text.textContent = '';
+    typeLoop();
+    document.querySelectorAll<HTMLElement>('.pips').forEach((bar, i) => barLoop(bar, 900 + i * 200));
+  }
+</script>
