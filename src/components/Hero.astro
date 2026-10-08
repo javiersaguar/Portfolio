@@ -37,7 +37,7 @@ const words = site.name.split(' ').map((w, wi, all) => {
 
     <figure class="portrait">
       <div class="frame">
-        <img src="/avatar.png" width="64" height="64" alt={`Pixel portrait of ${site.name}`} />
+        <img src="/avatar.jpg" width="540" height="540" alt={`Portrait of ${site.name}`} />
       </div>
       <figcaption class="mono">
         <span>HP</span><span class="bar" style="--v:0.86"></span>
@@ -140,7 +140,6 @@ const words = site.name.split(' ').map((w, wi, all) => {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    image-rendering: pixelated;
   }
   figcaption {
     display: grid;
