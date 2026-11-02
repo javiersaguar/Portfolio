@@ -16,7 +16,7 @@ const termData = {
   projects: featured.map((p) => ({ name: p.name, tagline: p.tagline })),
   quests: sideQuests.map((q) => ({ name: q.name, note: q.note })),
   stack: stack.map((g) => ({ group: g.group, items: g.items.map((i) => i.name) })),
-  certs: certifications.map((c) => `${c.name} (${c.issuer})`),
+  certs: certifications.map((c) => [c.issuer, c.name, c.detail].filter(Boolean).join(' ')),
 };
 ---
 
@@ -289,6 +289,7 @@ const termData = {
 
 <script>
   import { achievements, isGameBoy, toast, toggleGameBoy, unlock, unlocked } from '../scripts/game';
+  import { toggleTheme } from '../scripts/theme';
 
   type Data = {
     name: string;
@@ -371,6 +372,7 @@ const termData = {
           '  email         copy my email address',
           '  achievements  what you have unlocked here',
           '  snake         play snake on my contribution calendar',
+          '  theme         switch light and dark',
           '  gameboy       switch the palette',
           '  github        open my GitHub',
           '  linkedin      open my LinkedIn',
@@ -404,6 +406,11 @@ const termData = {
       print('loading snake...', 'ok');
       document.getElementById('activity')?.scrollIntoView({ behavior: 'smooth' });
       setTimeout(() => document.querySelector<HTMLButtonElement>('#activity .play-btn')?.click(), 600);
+    },
+    theme: () => {
+      const r = input.getBoundingClientRect();
+      print(`${toggleTheme({ x: r.left + 12, y: r.top + r.height / 2 })} theme on.`, 'ok');
+      unlock('theme');
     },
     gameboy: () => print(toggleGameBoy() ? 'game boy mode on.' : 'game boy mode off.', 'ok'),
     github: () => {

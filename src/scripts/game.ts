@@ -6,6 +6,7 @@ export const achievements = {
   inventory: { title: 'Inventory check', hint: 'Inspect an item in the tech stack.' },
   root: { title: 'Root access', hint: 'Run a command in the terminal.' },
   snake: { title: 'Snake charmer', hint: 'Eat 10 blocks in the snake game.' },
+  theme: { title: 'Lights switch', hint: 'Switch between the light and dark theme.' },
   explorer: { title: 'Explorer', hint: 'Reach the end of the page.' },
   konami: { title: 'Cheat code', hint: 'Up, up, down, down, left, right, left, right, B, A.' },
 } as const;

@@ -22,10 +22,44 @@
   --max: 1120px;
   --gutter: clamp(16px, 4vw, 40px);
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  /* On-screen movement from one place to another (the inventory cursor, the nav marker). */
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   color-scheme: dark;
 }
 
-/* Game Boy palette, unlocked with the Konami code or the footer switch */
+/* Light theme: same colour pairs as the README's -light.svg assets. It follows the
+   system unless the nav switch pinned a theme in data-theme. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) {
+    --bg: #f8faf8;
+    --bg-2: #eef4ef;
+    --line: #b8c8bc;
+    --ink: #17261c;
+    --ink-2: #344b3b;
+    --muted: #526858;
+    --accent: #1c763a;
+    --accent-dim: #c1d8c7;
+    --accent-ink: #f8faf8;
+    --grid-opacity: 0.45;
+    color-scheme: light;
+  }
+}
+
+:root[data-theme='light'] {
+  --bg: #f8faf8;
+  --bg-2: #eef4ef;
+  --line: #b8c8bc;
+  --ink: #17261c;
+  --ink-2: #344b3b;
+  --muted: #526858;
+  --accent: #1c763a;
+  --accent-dim: #c1d8c7;
+  --accent-ink: #f8faf8;
+  --grid-opacity: 0.45;
+  color-scheme: light;
+}
+
+/* Game Boy palette, unlocked with the Konami code or the footer switch. It wins over both themes. */
 :root[data-palette='gb'] {
   --bg: #0f380f;
   --bg-2: #173f17;
@@ -36,6 +70,8 @@
   --accent: #c4e538;
   --accent-dim: #306230;
   --accent-ink: #0f380f;
+  --grid-opacity: 0.18;
+  color-scheme: dark;
 }
 
 *,
@@ -70,7 +106,7 @@ body::before {
     linear-gradient(var(--line) 1px, transparent 1px),
     linear-gradient(90deg, var(--line) 1px, transparent 1px);
   background-size: 32px 32px;
-  opacity: 0.18;
+  opacity: var(--grid-opacity, 0.18);
   mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 70%);
 }
 
@@ -114,12 +150,84 @@ img {
   padding: clamp(72px, 10vw, 128px) 0;
 }
 
+/* Section titles, drawn like the README ones: a green arrow that blinks, letters
+   that drop in one by one (split by the layout script) and a dashed rule that
+   appears block by block. All of it runs once, when the title scrolls in. */
 .section-title {
+  position: relative;
   font-family: var(--font-pixel);
   font-weight: 400;
   font-size: clamp(28px, 4vw, 44px);
   line-height: 1.1;
-  margin: 0 0 12px;
+  margin: 0 0 20px;
+  padding-bottom: 18px;
+}
+.section-title::before {
+  content: '';
+  display: inline-block;
+  width: 0.5em;
+  height: 0.62em;
+  margin-right: 0.4em;
+  background: var(--accent);
+  /* A stepped triangle, so it reads as pixels. */
+  clip-path: polygon(0 0, 25% 0, 25% 12.5%, 50% 12.5%, 50% 25%, 75% 25%, 75% 37.5%, 100% 37.5%, 100% 62.5%, 75% 62.5%,
+      75% 75%, 50% 75%, 50% 87.5%, 25% 87.5%, 25% 100%, 0 100%);
+}
+.section-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  background: repeating-linear-gradient(90deg, var(--line) 0 8px, transparent 8px 12px);
+}
+.section-title .ch {
+  display: inline-block;
+  white-space: pre;
+}
+.section-title.reveal {
+  /* The title animates its parts, not the whole block. */
+  opacity: 1;
+  transform: none;
+}
+.section-title.reveal .ch {
+  opacity: 0;
+}
+.section-title.reveal.in .ch {
+  animation: title-drop 450ms var(--ease) both;
+  animation-delay: calc(50ms + var(--i) * 35ms + var(--j, 0) * 1ms);
+}
+.section-title.reveal.in::before {
+  animation: title-blink 400ms step-end 900ms 4;
+}
+.section-title.reveal::after {
+  clip-path: inset(0 100% 0 0);
+}
+.section-title.reveal.in::after {
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 700ms steps(40) 150ms;
+}
+@keyframes title-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-0.3em);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes title-blink {
+  50% {
+    opacity: 0;
+  }
+}
+.no-js .section-title.reveal .ch {
+  opacity: 1;
+}
+.no-js .section-title.reveal::after {
+  clip-path: none;
 }
 
 .section-lead {
@@ -264,6 +372,64 @@ img {
   transform: none;
 }
 
+/* Hover motion only where there is a real pointer: touch fires hovers on tap. */
+@media (hover: hover) and (pointer: fine) {
+  .hop:hover .sprite,
+  :is(.card, .quest, .cert):hover .sprite {
+    animation: sprite-hop 420ms steps(4) both;
+  }
+}
+@keyframes sprite-hop {
+  0%,
+  100% {
+    transform: none;
+  }
+  40% {
+    transform: translateY(-6px);
+  }
+  70% {
+    transform: translateY(-2px);
+  }
+}
+
+/* Theme switch: the new theme grows as a circle from the button (theme.ts).
+   The default cross-fade is turned off so only the circle is seen. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+.vt-theme::view-transition-old(root) {
+  z-index: 0;
+}
+.vt-theme::view-transition-new(root) {
+  z-index: 1;
+}
+
+/* Project filter: cards glide to their new place (Projects.astro). */
+::view-transition-group(*) {
+  animation-duration: 320ms;
+  animation-timing-function: var(--ease-in-out);
+}
+::view-transition-new(*):only-child {
+  animation: vt-in 260ms var(--ease) both;
+}
+::view-transition-old(*):only-child {
+  animation: vt-out 180ms var(--ease) both;
+}
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+@keyframes vt-out {
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -278,5 +444,11 @@ img {
   .reveal {
     opacity: 1;
     transform: none;
+  }
+  .section-title.reveal .ch {
+    opacity: 1;
+  }
+  .section-title.reveal::after {
+    clip-path: none;
   }
 }

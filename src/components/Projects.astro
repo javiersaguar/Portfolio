@@ -28,14 +28,21 @@ const count = (id: string) => (id === 'all' ? featured.length : featured.filter(
     <div class="grid">
       {
         featured.map((p, i) => (
-          <article class:list={['card', 'reveal', { big: wide.has(i) }]} data-tags={p.tags.join(' ')} style={`--d:${i % 3}`}>
+          <article
+            class:list={['card', 'reveal', { big: wide.has(i) }]}
+            data-tags={p.tags.join(' ')}
+            style={`--d:${i % 3}`}
+          >
+            <span class="scan" aria-hidden="true" />
             <div class="card-top">
               <div class="who">
                 <Sprite name={p.sprite} size={wide.has(i) ? 56 : 44} delay={i * 0.2} />
                 <span class="context mono">{p.context}</span>
               </div>
               <div class="stat">
-                <span class="stat-value pixel">{p.stat.value}</span>
+                <span class="stat-value pixel" data-count style={`min-width:${p.stat.value.length}ch`}>
+                  {p.stat.value}
+                </span>
                 <span class="stat-label">{p.stat.label}</span>
               </div>
             </div>
@@ -43,8 +50,10 @@ const count = (id: string) => (id === 'all' ? featured.length : featured.filter(
             <p class="tagline">{p.tagline}</p>
             <p class="body">{p.body}</p>
             <ul class="stack" aria-label="Stack">
-              {p.stack.map((s) => (
-                <li class="tag">{s}</li>
+              {p.stack.map((s, t) => (
+                <li class="tag" style={`--t:${t}`}>
+                  {s}
+                </li>
               ))}
             </ul>
             <div class="actions">
@@ -54,7 +63,7 @@ const count = (id: string) => (id === 'all' ? featured.length : featured.filter(
                 </a>
               )}
               <a href={`${site.github}/${p.repo}`} target="_blank" rel="noopener" class="link">
-                <Icon name="github" /> Code
+                <Icon name="github" /> Code <Icon name="arrow" class="arrow" />
               </a>
             </div>
           </article>
@@ -90,7 +99,7 @@ const count = (id: string) => (id === 'all' ? featured.length : featured.filter(
       <ul class="class-list">
         {
           coursework.map((c, i) => (
-            <li>
+            <li class="hop" style={`--c:${i}`}>
               <Sprite name={c.sprite} size={44} delay={i * 0.4} />
               <div>
                 <p class="c-name pixel">{c.name}</p>
@@ -160,10 +169,103 @@ const count = (id: string) => (id === 'all' ? featured.length : featured.filter(
       box-shadow 200ms var(--ease),
       opacity 600ms var(--ease);
   }
-  .card:hover {
-    border-color: var(--accent-dim);
-    transform: translate(-3px, -3px);
-    box-shadow: 6px 6px 0 var(--accent-dim);
+  .card {
+    isolation: isolate;
+    overflow: hidden;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .card:hover {
+      border-color: var(--accent-dim);
+      transform: translate(-3px, -3px);
+      box-shadow: 6px 6px 0 var(--accent-dim);
+    }
+    .card:hover::before {
+      opacity: 1;
+    }
+    .card:hover .stack .tag {
+      border-color: var(--accent-dim);
+    }
+    .link:hover :global(.arrow) {
+      transform: translate(2px, -2px);
+    }
+  }
+  /* Light that follows the pointer over the card (--mx/--my set by the script). */
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(
+      260px circle at var(--mx, 50%) var(--my, 0%),
+      color-mix(in srgb, var(--accent) 13%, transparent),
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 240ms ease;
+  }
+  /* Entrance, once: the card rises, a scan line sweeps it like an old screen
+     turning on, then the stack tags drop in one by one. */
+  .card.reveal.in {
+    animation: card-in 640ms var(--ease) backwards;
+    animation-delay: calc(var(--d) * 90ms);
+  }
+  @keyframes card-in {
+    from {
+      opacity: 0;
+      transform: translateY(28px) scale(0.97);
+    }
+  }
+  .scan {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 35%;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(
+      transparent,
+      color-mix(in srgb, var(--accent) 14%, transparent) 80%,
+      color-mix(in srgb, var(--accent) 45%, transparent) 98%,
+      transparent
+    );
+    opacity: 0;
+  }
+  .card.in .scan {
+    animation: scan 1000ms var(--ease-in-out) both;
+    animation-delay: calc(180ms + var(--d) * 90ms);
+  }
+  @keyframes scan {
+    0% {
+      opacity: 1;
+      transform: translateY(-100%);
+    }
+    85% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(300%);
+    }
+  }
+  .card.in .stack .tag {
+    animation: tag-in 300ms var(--ease) backwards;
+    animation-delay: calc(420ms + var(--d) * 90ms + var(--t) * 45ms);
+  }
+  @keyframes tag-in {
+    from {
+      opacity: 0;
+      transform: translateY(5px);
+    }
+  }
+  .stack .tag {
+    transition: border-color 200ms ease;
+  }
+  .link :global(.arrow) {
+    width: 12px;
+    height: 12px;
+    transition: transform 160ms var(--ease);
   }
   .card[hidden] {
     display: none;
@@ -175,11 +277,11 @@ const count = (id: string) => (id === 'all' ? featured.length : featured.filter(
       repeating-linear-gradient(0deg, transparent 0 15px, color-mix(in srgb, var(--accent) 5%, transparent) 15px 16px),
       var(--bg-2);
   }
-  .grid.filtered .card.big {
+  .grid.narrow .card.big {
     grid-column: auto;
   }
   .grid.filtered .card {
-    animation: pop-in 320ms var(--ease) both;
+    animation: pop-in 320ms var(--ease) backwards;
   }
   @keyframes pop-in {
     from {
@@ -342,8 +444,20 @@ const count = (id: string) => (id === 'all' ? featured.length : featured.filter(
     width: 14px;
     height: 14px;
   }
-  .quest:hover .q-play {
-    animation: blink 0.8s step-end infinite;
+  @media (hover: hover) and (pointer: fine) {
+    .quest:hover .q-play {
+      animation: blink 0.8s step-end infinite;
+    }
+    .quest:hover .q-play :global(.icon) {
+      transform: translateX(3px);
+    }
+  }
+  .q-play :global(.icon) {
+    transition: transform 160ms var(--ease);
+  }
+  .class-panel.in li {
+    animation: tag-in 420ms var(--ease) backwards;
+    animation-delay: calc(200ms + var(--c) * 90ms);
   }
   @keyframes blink {
     50% {
@@ -416,30 +530,59 @@ const count = (id: string) => (id === 'all' ? featured.length : featured.filter(
 </style>
 
 <script>
-  import { unlock } from '../scripts/game';
+  import { prefersReducedMotion, unlock } from '../scripts/game';
 
   const grid = document.querySelector<HTMLElement>('#projects .grid')!;
   const cards = [...grid.querySelectorAll<HTMLElement>('.card')];
   const none = document.querySelector<HTMLElement>('#projects .none')!;
   const buttons = [...document.querySelectorAll<HTMLButtonElement>('#projects .filter')];
 
+  type VTDocument = Document & { startViewTransition?: (cb: () => void) => { finished: Promise<void> } };
+
+  const apply = (id: string) => {
+    let shown = 0;
+    for (const card of cards) {
+      const match = id === 'all' || card.dataset.tags!.split(' ').includes(id);
+      card.hidden = !match;
+      card.classList.add('in');
+      if (match) shown++;
+    }
+    grid.classList.toggle('narrow', id !== 'all');
+    none.hidden = shown > 0;
+  };
+
   buttons.forEach((btn) =>
     btn.addEventListener('click', () => {
       const id = btn.dataset.filter!;
+      if (btn.getAttribute('aria-pressed') === 'true') return;
       buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
-      let shown = 0;
-      for (const card of cards) {
-        const match = id === 'all' || card.dataset.tags!.split(' ').includes(id);
-        card.hidden = !match;
-        card.classList.add('in');
-        if (match) shown++;
+      const doc = document as VTDocument;
+      if (doc.startViewTransition && !prefersReducedMotion()) {
+        // Cards glide from their old place to the new one; leaving cards shrink
+        // and fade, arriving ones grow in. Names are only set for this transition,
+        // so the theme switch keeps its single circle.
+        cards.forEach((c, i) => (c.style.viewTransitionName = `card-${i}`));
+        const vt = doc.startViewTransition(() => apply(id));
+        vt.finished.finally(() => cards.forEach((c) => (c.style.viewTransitionName = '')));
+      } else {
+        apply(id);
+        // Older browsers: restart a short pop-in instead.
+        grid.classList.remove('filtered');
+        void grid.offsetWidth;
+        grid.classList.toggle('filtered', id !== 'all');
       }
-      // Restart the pop-in on every change.
-      grid.classList.remove('filtered');
-      void grid.offsetWidth;
-      grid.classList.toggle('filtered', id !== 'all');
-      none.hidden = shown > 0;
       if (id !== 'all') unlock('filter');
     }),
   );
+
+  // Pointer light. Only with a real mouse; the position is set on each card itself.
+  if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    for (const card of cards) {
+      card.addEventListener('pointermove', (e) => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+        card.style.setProperty('--my', `${e.clientY - r.top}px`);
+      });
+    }
+  }
 </script>

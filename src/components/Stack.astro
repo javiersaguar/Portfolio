@@ -5,6 +5,9 @@ import { brandIcons } from '../data/brand-icons';
 const total = stack.reduce((n, g) => n + g.items.length, 0);
 const first = stack[0].items[0];
 let index = 0;
+
+// "text:RP" items have no logo: they show their letters in the pixel font, like the README.
+const textOf = (icon: string) => (icon.startsWith('text:') ? icon.slice(5) : null);
 ---
 
 <section class="section" id="stack">
@@ -17,7 +20,10 @@ let index = 0;
     <div class="inventory reveal">
       <div class="inv-head">
         <span class="pixel inv-title">Inventory</span>
-        <span class="mono inv-count">{total} items</span>
+        <span class="inv-right">
+          <span class="mono inv-hud" aria-hidden="true">{stack[0].group} / {first.name}</span>
+          <span class="mono inv-count">{total} items</span>
+        </span>
       </div>
 
       <div class="rows">
@@ -28,11 +34,13 @@ let index = 0;
               <ul class="slots" aria-label={g.group}>
                 {g.items.map((it, c) => {
                   const i = index++;
+                  const txt = textOf(it.icon);
                   return (
                     <li>
                       <button
                         type="button"
                         class:list={['slot', { sel: i === 0 }]}
+                        style={`--i:${i}`}
                         tabindex={i === 0 ? 0 : -1}
                         data-i={i}
                         data-row={r}
@@ -40,13 +48,18 @@ let index = 0;
                         data-name={it.name}
                         data-group={g.group}
                         data-used={it.used}
-                        data-icon={brandIcons[it.icon]}
                         aria-label={`${it.name}: ${it.used}`}
                       >
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                          <path d={brandIcons[it.icon]} />
-                        </svg>
-                        <span class="slot-name mono">{it.name}</span>
+                        {txt ? (
+                          <span class:list={['glyph', 'txt', 'pixel', { long: txt.length > 3 }]} aria-hidden="true">
+                            {txt}
+                          </span>
+                        ) : (
+                          <svg class="glyph" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d={brandIcons[it.icon]} />
+                          </svg>
+                        )}
+                        <span class="slot-name">{it.name}</span>
                       </button>
                     </li>
                   );
@@ -55,11 +68,14 @@ let index = 0;
             </div>
           ))
         }
+        <span class="cursor" aria-hidden="true"></span>
       </div>
 
       <div class="desc" aria-live="polite">
-        <svg class="desc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d={brandIcons[first.icon]} /></svg>
-        <div>
+        <span class="desc-icon" aria-hidden="true">
+          <svg class="glyph" viewBox="0 0 24 24"><path d={brandIcons[first.icon]} /></svg>
+        </span>
+        <div class="desc-body">
           <p class="desc-name pixel">{first.name} <span class="desc-group mono">{stack[0].group}</span></p>
           <p class="desc-used">{first.used}</p>
         </div>
@@ -79,25 +95,36 @@ let index = 0;
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    margin-bottom: 20px;
+    gap: 16px;
+    margin-bottom: 22px;
   }
   .inv-title {
     color: var(--accent);
     font-size: 16px;
+  }
+  .inv-right {
+    display: flex;
+    gap: 18px;
+    align-items: baseline;
+  }
+  .inv-hud {
+    color: var(--accent);
+    font-size: 13px;
   }
   .inv-count {
     color: var(--muted);
     font-size: 13px;
   }
   .rows {
+    position: relative;
     display: grid;
-    gap: 14px;
+    gap: 12px;
   }
   .row {
     display: grid;
-    grid-template-columns: 130px 1fr;
+    grid-template-columns: 96px 1fr;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
   }
   .group {
     font-size: 13px;
@@ -109,30 +136,64 @@ let index = 0;
     margin: 0;
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 7px;
   }
   .slot {
     position: relative;
-    width: 84px;
-    height: 84px;
+    width: 70px;
+    height: 66px;
     display: grid;
+    grid-template-rows: 30px auto;
     place-items: center;
     align-content: center;
-    gap: 8px;
-    padding: 0;
+    gap: 6px;
+    padding: 0 2px;
     color: var(--ink-2);
     background: var(--bg-2);
-    border: 2px solid var(--line);
+    border: 1px solid var(--line);
     cursor: pointer;
-    transition: color 120ms var(--ease);
+    transition:
+      color 120ms ease,
+      background-color 120ms ease;
   }
-  .slot svg {
-    width: 30px;
-    height: 30px;
+  /* Slots pop in row by row the first time the inventory is seen. */
+  .inventory.reveal .slot {
+    opacity: 0;
+  }
+  .inventory.reveal.in .slot {
+    animation: slot-in 320ms var(--ease) both;
+    animation-delay: calc(200ms + var(--i) * 12ms);
+  }
+  @keyframes slot-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px) scale(0.92);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .glyph {
+    width: 24px;
+    height: 24px;
     fill: currentColor;
   }
-  .slot-name {
+  .txt {
+    display: grid;
+    place-items: center;
+    width: auto;
+    font-size: 15px;
+    line-height: 1;
+    letter-spacing: 0;
+  }
+  .txt.long {
     font-size: 11px;
+  }
+  .slot-name {
+    font-size: 10.5px;
+    line-height: 1.1;
+    text-align: center;
     color: var(--muted);
   }
   .slot:focus-visible {
@@ -140,24 +201,42 @@ let index = 0;
   }
   .slot.sel {
     color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 9%, var(--bg-2));
   }
-  /* Pixel corner brackets around the selected slot */
-  .slot.sel::before {
-    content: '';
+
+  /* One set of pixel corner brackets that glides to the selected slot. */
+  .cursor {
     position: absolute;
-    inset: -8px;
+    left: 0;
+    top: 0;
+    width: 70px;
+    height: 66px;
     pointer-events: none;
+    opacity: 0;
     --c: var(--accent);
     background:
-      linear-gradient(var(--c), var(--c)) top left / 16px 4px,
-      linear-gradient(var(--c), var(--c)) top left / 4px 16px,
-      linear-gradient(var(--c), var(--c)) top right / 16px 4px,
-      linear-gradient(var(--c), var(--c)) top right / 4px 16px,
-      linear-gradient(var(--c), var(--c)) bottom left / 16px 4px,
-      linear-gradient(var(--c), var(--c)) bottom left / 4px 16px,
-      linear-gradient(var(--c), var(--c)) bottom right / 16px 4px,
-      linear-gradient(var(--c), var(--c)) bottom right / 4px 16px;
+      linear-gradient(var(--c), var(--c)) top left / 12px 3px,
+      linear-gradient(var(--c), var(--c)) top left / 3px 12px,
+      linear-gradient(var(--c), var(--c)) top right / 12px 3px,
+      linear-gradient(var(--c), var(--c)) top right / 3px 12px,
+      linear-gradient(var(--c), var(--c)) bottom left / 12px 3px,
+      linear-gradient(var(--c), var(--c)) bottom left / 3px 12px,
+      linear-gradient(var(--c), var(--c)) bottom right / 12px 3px,
+      linear-gradient(var(--c), var(--c)) bottom right / 3px 12px;
     background-repeat: no-repeat;
+    margin: -6px 0 0 -6px;
+    padding: 6px;
+    box-sizing: content-box;
+    transition:
+      transform 200ms var(--ease-in-out),
+      opacity 200ms ease;
+  }
+  .cursor.ready {
+    opacity: 1;
+  }
+  .cursor.far {
+    /* Jumping to another row: a slightly longer glide reads better than a snap. */
+    transition-duration: 280ms;
   }
 
   .desc {
@@ -171,10 +250,22 @@ let index = 0;
     border: 2px dashed var(--line);
   }
   .desc-icon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    color: var(--accent);
+  }
+  .desc-icon :global(.glyph) {
     width: 40px;
     height: 40px;
-    flex-shrink: 0;
-    fill: var(--accent);
+  }
+  .desc-icon :global(.txt) {
+    font-size: 22px;
+  }
+  .desc-icon :global(.txt.long) {
+    font-size: 15px;
   }
   .desc p {
     margin: 0;
@@ -198,17 +289,17 @@ let index = 0;
       padding: 18px;
       box-shadow: 6px 6px 0 var(--accent-dim);
     }
+    .inv-hud {
+      display: none;
+    }
     .row {
       grid-template-columns: 1fr;
-      gap: 10px;
+      gap: 8px;
     }
-    .slot {
-      width: 68px;
-      height: 68px;
-    }
-    .slot svg {
-      width: 24px;
-      height: 24px;
+    .slot,
+    .cursor {
+      width: 64px;
+      height: 62px;
     }
     .slot-name {
       font-size: 10px;
@@ -220,13 +311,27 @@ let index = 0;
   import { prefersReducedMotion, unlock } from '../scripts/game';
 
   const root = document.querySelector<HTMLElement>('#stack .inventory')!;
+  const rows = root.querySelector<HTMLElement>('.rows')!;
   const slots = [...root.querySelectorAll<HTMLButtonElement>('.slot')];
-  const icon = root.querySelector<SVGPathElement>('.desc-icon path')!;
+  const cursor = root.querySelector<HTMLElement>('.cursor')!;
+  const hud = root.querySelector<HTMLElement>('.inv-hud')!;
+  const descIcon = root.querySelector<HTMLElement>('.desc-icon')!;
+  const descBody = root.querySelector<HTMLElement>('.desc-body')!;
   const name = root.querySelector<HTMLElement>('.desc-name')!;
   const used = root.querySelector<HTMLElement>('.desc-used')!;
   let current = 0;
 
+  const place = (far = false) => {
+    // offsetLeft/Top are relative to .rows (the nearest positioned box) and ignore
+    // the slots' own entrance transforms.
+    const s = slots[current];
+    cursor.classList.toggle('far', far);
+    cursor.style.transform = `translate(${s.offsetLeft}px, ${s.offsetTop}px)`;
+  };
+
   const select = (i: number, focus = false) => {
+    if (i === current) return;
+    const far = slots[i].dataset.row !== slots[current].dataset.row;
     slots[current].classList.remove('sel');
     slots[current].tabIndex = -1;
     current = i;
@@ -234,11 +339,42 @@ let index = 0;
     s.classList.add('sel');
     s.tabIndex = 0;
     if (focus) s.focus();
-    icon.setAttribute('d', s.dataset.icon!);
+    place(far);
+    hud.textContent = `${s.dataset.group} / ${s.dataset.name}`;
+    descIcon.replaceChildren(s.querySelector('.glyph')!.cloneNode(true));
     name.firstChild!.textContent = `${s.dataset.name} `;
     name.querySelector('.desc-group')!.textContent = s.dataset.group!;
     used.textContent = s.dataset.used!;
+    if (!prefersReducedMotion()) {
+      descBody.animate(
+        { opacity: [0, 1], transform: ['translateY(4px)', 'none'] },
+        { duration: 160, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' },
+      );
+    }
   };
+
+  // The cursor shows up once the slots have popped in, then follows the selection.
+  const showCursor = () => {
+    place();
+    requestAnimationFrame(() => cursor.classList.add('ready'));
+  };
+  if (prefersReducedMotion() || root.classList.contains('in')) showCursor();
+  else {
+    const seen = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) {
+        seen.disconnect();
+        setTimeout(showCursor, 500);
+      }
+    });
+    seen.observe(root);
+  }
+  // Layout changes (resize, fonts) move the slots: put the cursor back without gliding.
+  new ResizeObserver(() => {
+    cursor.style.transition = 'none';
+    place();
+    void cursor.offsetWidth;
+    cursor.style.transition = '';
+  }).observe(rows);
 
   // Until someone touches it, the cursor walks the inventory by itself.
   let auto: number | undefined;
@@ -248,6 +384,7 @@ let index = 0;
   };
   const byUser = (i: number, focus = false) => {
     stopAuto();
+    root.dataset.touched = '1';
     select(i, focus);
     unlock('inventory');
   };
@@ -288,8 +425,5 @@ let index = 0;
       } else if (!visible) stopAuto();
     });
     io.observe(root);
-    root.addEventListener('pointerdown', () => (root.dataset.touched = '1'));
-    root.addEventListener('keydown', () => (root.dataset.touched = '1'));
-    root.addEventListener('pointerenter', () => (root.dataset.touched = '1'));
   }
 </script>

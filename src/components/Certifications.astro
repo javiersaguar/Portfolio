@@ -1,6 +1,10 @@
 ---
-import Sprite from './Sprite.astro';
 import { certifications } from '../data/site';
+import { brandIcons } from '../data/brand-icons';
+
+// Same medal as the README (scripts/build_assets.py, build_certifications).
+const edge = 'M42 50H54V38H102V50H114V62H126V110H114V122H102V134H54V122H42V110H30V62H42Z';
+const face = 'M50 62H62V50H94V62H106V74H114V98H106V110H94V122H62V110H50V98H42V74H50Z';
 ---
 
 <section class="section certs-section" id="certifications">
@@ -9,11 +13,45 @@ import { certifications } from '../data/site';
     <ul class="certs">
       {
         certifications.map((c, i) => (
-          <li class="cert reveal" style={`--d:${i + 1}`}>
-            <Sprite name="medal" size={56} delay={i * 0.6} />
-            <div>
-              <p class="issuer mono">{c.issuer} · Certificate</p>
-              <p class="cert-name">{c.name}</p>
+          <li class="cert reveal" style={`--d:${i + 1}; --glint-delay:${i * 2.4}s`}>
+            <svg class="medal" viewBox="10 24 136 156" aria-hidden="true">
+              <defs>
+                <clipPath id={`medal-face-${i}`}>
+                  <path d={edge} />
+                </clipPath>
+              </defs>
+              <g class="ribbons">
+                <path d="M49 115H76L70 175L58 163L44 173Z" class="ribbon" />
+                <path d="M80 115H107L112 173L98 163L86 175Z" class="ribbon" />
+                <path d="M58 127L54 157M96 127L100 157" class="ribbon-line" />
+              </g>
+              <g class="coin">
+                <path d={edge} class="coin-edge" />
+                <path d={face} class="coin-face" />
+                <path d="M54 66V60H66M94 112H102V104" class="coin-shine" />
+                <path class="coin-logo" transform={`translate(58 66) scale(${40 / 24})`} d={brandIcons[c.icon]} />
+                <g clip-path={`url(#medal-face-${i})`}>
+                  <g class="glint">
+                    <path d="M0 30H12L76 140H64Z" opacity=".45" />
+                    <path d="M16 30H20L84 140H80Z" opacity=".75" />
+                  </g>
+                </g>
+              </g>
+              <g class="spark s0">
+                <rect x="134" y="32" width="2" height="10" />
+                <rect x="130" y="36" width="10" height="2" />
+              </g>
+              <g class="spark s1">
+                <rect x="22" y="110" width="2" height="10" />
+                <rect x="18" y="114" width="10" height="2" />
+              </g>
+            </svg>
+            <div class="cert-text">
+              <p class="issuer pixel">{c.issuer}</p>
+              <p class="cert-name">
+                {c.name}
+                {c.detail && <span class="cert-detail">{c.detail}</span>}
+              </p>
             </div>
           </li>
         ))
@@ -36,44 +74,197 @@ import { certifications } from '../data/site';
   }
   .cert {
     display: flex;
-    gap: 20px;
+    gap: 22px;
     align-items: center;
-    padding: 22px 24px;
+    padding: 20px 24px;
     background: var(--bg-2);
-    border: 1px solid var(--line);
+    border: 2px solid var(--line);
     box-shadow: 6px 6px 0 var(--accent-dim);
+    transition:
+      transform 200ms var(--ease),
+      box-shadow 200ms var(--ease),
+      border-color 200ms ease;
   }
-  .cert.in :global(.sprite) {
+  @media (hover: hover) and (pointer: fine) {
+    .cert:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 9px 9px 0 var(--accent-dim);
+      border-color: var(--accent-dim);
+    }
+    .cert:hover .medal {
+      animation: swing 700ms var(--ease) both;
+    }
+  }
+  /* Swinging from the ribbons, like a medal just hung. */
+  @keyframes swing {
+    0% {
+      transform: rotate(0);
+    }
+    25% {
+      transform: rotate(-7deg);
+    }
+    55% {
+      transform: rotate(4deg);
+    }
+    80% {
+      transform: rotate(-1.5deg);
+    }
+    100% {
+      transform: rotate(0);
+    }
+  }
+
+  .medal {
+    width: 104px;
+    height: auto;
+    flex-shrink: 0;
+    overflow: visible;
+    transform-origin: 50% 0;
+  }
+  .ribbon {
+    fill: var(--accent-dim);
+    stroke: var(--accent);
+    stroke-width: 2;
+  }
+  .ribbon-line {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 4;
+  }
+  .coin-edge {
+    fill: var(--accent-dim);
+    stroke: var(--accent);
+    stroke-width: 3;
+  }
+  .coin-face {
+    fill: var(--bg-2);
+    stroke: var(--accent);
+    stroke-width: 2;
+  }
+  .coin-shine {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 3;
+  }
+  .coin-logo {
+    fill: var(--ink);
+  }
+  .glint {
+    fill: #fff;
+    opacity: 0;
+  }
+  .spark {
+    fill: var(--accent);
+    opacity: 0;
+  }
+
+  /* Unlocked: the coin drops in with a turn, the ribbons follow, then it keeps
+     catching the light every few seconds (same timing as the README). */
+  .cert.in .coin {
+    transform-box: fill-box;
+    transform-origin: center;
     animation: unlock 700ms var(--ease) both;
-    animation-delay: calc(200ms + var(--d) * 120ms);
+    animation-delay: calc(150ms + var(--d) * 120ms);
+  }
+  .cert.in .ribbons {
+    animation: ribbons 400ms var(--ease) both;
+    animation-delay: calc(450ms + var(--d) * 120ms);
+  }
+  .cert.in .glint {
+    animation: glint 6s linear infinite;
+    animation-delay: calc(1.2s + var(--glint-delay));
+  }
+  .cert.in .spark {
+    animation: spark 6s linear infinite;
+    animation-delay: calc(1.2s + var(--glint-delay));
+  }
+  .cert.in .s1 {
+    animation-delay: calc(1.38s + var(--glint-delay));
   }
   @keyframes unlock {
     0% {
-      transform: scale(0.4) rotate(-12deg);
+      transform: translateY(-14px) scale(0.6) rotate(-14deg);
       opacity: 0;
     }
-    70% {
-      transform: scale(1.12);
+    65% {
+      transform: translateY(0) scale(1.06) rotate(3deg);
+      opacity: 1;
+    }
+    100% {
+      transform: none;
       opacity: 1;
     }
   }
+  @keyframes ribbons {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+  }
+  @keyframes glint {
+    0%,
+    6% {
+      opacity: 0;
+      transform: translateX(-100px);
+    }
+    6.01% {
+      opacity: 1;
+      transform: translateX(-100px);
+    }
+    18% {
+      opacity: 1;
+      transform: translateX(140px);
+    }
+    19%,
+    100% {
+      opacity: 0;
+      transform: translateX(140px);
+    }
+  }
+  @keyframes spark {
+    0%,
+    13%,
+    24%,
+    100% {
+      opacity: 0;
+    }
+    18% {
+      opacity: 0.9;
+    }
+  }
+
   .cert p {
     margin: 0;
   }
   .issuer {
-    font-size: 12px;
-    color: var(--muted);
-    margin-bottom: 4px !important;
+    font-size: 15px;
+    color: var(--accent);
+    margin-bottom: 8px !important;
   }
   .cert-name {
-    font-size: 18px;
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+  .cert-detail {
+    display: block;
+    font-size: 16px;
     font-weight: 600;
-    line-height: 1.3;
+    color: var(--ink-2);
   }
 
   @media (max-width: 767px) {
     .certs {
       grid-template-columns: 1fr;
+    }
+    .medal {
+      width: 84px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .glint,
+    .spark {
+      display: none;
     }
   }
 </style>

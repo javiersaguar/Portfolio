@@ -43,7 +43,7 @@ export type Project = {
 export const featured: Project[] = [
   {
     name: 'Albertitos',
-    repo: 'HS-Maisa',
+    repo: 'AlbertitosAI-DecisionEngine',
     sprite: 'invoice',
     tags: ['data'],
     tagline: 'Accounts payable on autopilot, with receipts.',
@@ -56,7 +56,7 @@ export const featured: Project[] = [
   },
   {
     name: 'HappyTaxi',
-    repo: 'PIDS-Proyecto1',
+    repo: 'HappyTaxy-BigData',
     sprite: 'taxi',
     tags: ['data', 'security'],
     tagline: 'A privacy-first data platform for NYC taxis.',
@@ -131,9 +131,10 @@ export const coursework: { name: string; note: string; sprite: SpriteName }[] = 
   { name: 'Hand gestures', note: 'Gesture recognition with MediaPipe and a CNN.', sprite: 'hand' },
 ];
 
-export const certifications = [
-  { name: 'Google Cybersecurity Professional Certificate', issuer: 'Google' },
-  { name: 'Jr Penetration Tester', issuer: 'TryHackMe' },
+// Shown as medals with the issuer's logo, like the README.
+export const certifications: { name: string; detail?: string; issuer: string; icon: string }[] = [
+  { name: 'Cybersecurity', detail: 'Professional Certificate', issuer: 'Google', icon: 'google' },
+  { name: 'Jr Penetration Tester', issuer: 'TryHackMe', icon: 'tryhackme' },
 ];
 
 // About me, as it is typed in the dialogue box. **bold** marks the highlights.
@@ -158,56 +159,92 @@ export const loot = [
 
 export type StackItem = { icon: string; name: string; used: string };
 
-// Tech stack as an inventory. "used" says where each one shows up.
+// Tech stack as an inventory, with the same items and order as the README.
+// "icon" is a Simple Icons slug, or "text:XX" when there is no logo (drawn as letters).
+// "used" says where each one shows up; tools that are not in a public repo yet say what they are for.
 export const stack: { group: string; items: StackItem[] }[] = [
   {
     group: 'Data',
     items: [
       { icon: 'apachespark', name: 'Spark', used: 'HappyTaxi and Flight Delays, written in Scala, in cluster mode.' },
-      { icon: 'scala', name: 'Scala', used: 'The Spark jobs of HappyTaxi and Flight Delays.' },
-      { icon: 'apachekafka', name: 'Kafka', used: 'Flight Delays streams its requests; HappyTaxi uses Redpanda, its Kafka API.' },
+      { icon: 'apacheflink', name: 'Flink', used: 'Streaming and multi-stage detection (CEP) in my thesis.' },
+      { icon: 'apachekafka', name: 'Kafka', used: 'Flight Delays streams its prediction requests through Kafka.' },
+      { icon: 'text:RP', name: 'Redpanda', used: 'The event bus of HappyTaxi and of my thesis.' },
+      { icon: 'clickhouse', name: 'ClickHouse', used: 'The analytical store of my thesis: events, alerts and campaigns.' },
       { icon: 'apacheairflow', name: 'Airflow', used: 'Orchestrates loads and retraining in HappyTaxi and Flight Delays.' },
+      { icon: 'databricks', name: 'Databricks', used: 'Managed Spark: notebooks, jobs and Delta tables.' },
+      { icon: 'text:ICE', name: 'Iceberg', used: 'The lakehouse tables of Flight Delays.' },
+      { icon: 'neo4j', name: 'Neo4j', used: 'The attack graph of my thesis: feasible paths to the critical assets.' },
       { icon: 'mongodb', name: 'MongoDB', used: 'Aggregates in HappyTaxi, predictions in Flight Delays.' },
       { icon: 'apachecassandra', name: 'Cassandra', used: 'Distances and predictions in Flight Delays.' },
-      { icon: 'mlflow', name: 'MLflow', used: 'Tracks every retraining of Flight Delays.' },
-      { icon: 'duckdb', name: 'DuckDB', used: 'The analytical store behind European Bad Drivers.' },
     ],
   },
   {
     group: 'Security',
     items: [
-      { icon: 'kalilinux', name: 'Kali', used: 'My pentesting box for labs and audits.' },
       { icon: 'wireshark', name: 'Wireshark', used: 'Traffic analysis in labs and audits.' },
-      { icon: 'metasploit', name: 'Metasploit', used: 'Exploitation in TryHackMe labs.' },
+      { icon: 'text:WZ', name: 'Wazuh', used: 'Open SIEM, planned as the outside baseline for the rules of my thesis.' },
+      { icon: 'text:SURI', name: 'Suricata', used: 'Network IDS alerts are one of the telemetry sources of my thesis.' },
+      { icon: 'owasp', name: 'OWASP', used: 'The checklist behind web audits and the Atalaya header checks.' },
       { icon: 'burpsuite', name: 'Burp Suite', used: 'Web application audits.' },
-      { icon: 'tryhackme', name: 'TryHackMe', used: 'Jr Penetration Tester path, completed.' },
-      { icon: 'owasp', name: 'OWASP', used: 'The checklist behind web audits and Atalaya header checks.' },
+      { icon: 'text:NMAP', name: 'Nmap', used: 'Network discovery and port scanning in labs and audits.' },
+      { icon: 'vault', name: 'Vault', used: 'Secrets management: keys and credentials out of the code.' },
+      { icon: 'text:ATT&CK', name: 'MITRE ATT&CK', used: 'Every detection and incident in my thesis maps to ATT&CK techniques.' },
     ],
   },
   {
-    group: 'Cloud & ops',
+    group: 'Cloud',
     items: [
-      { icon: 'docker', name: 'Docker', used: 'HappyTaxi, Flight Delays and Albertitos all run on Docker.' },
+      { icon: 'googlecloud', name: 'Google Cloud', used: 'GKE, Compute Engine and Artifact Registry for Flight Delays.' },
+      { icon: 'text:AWS', name: 'AWS', used: 'Compute, storage and IAM on Amazon Web Services.' },
+      { icon: 'text:AZ', name: 'Azure', used: 'Microsoft cloud services and Entra ID.' },
+      { icon: 'terraform', name: 'Terraform', used: 'Infrastructure as code.' },
+      { icon: 'googlebigquery', name: 'BigQuery', used: 'Serverless SQL warehouse on Google Cloud.' },
+      { icon: 'text:S3', name: 'S3', used: 'The S3 API: SeaweedFS in HappyTaxi, MinIO in Flight Delays.' },
+      { icon: 'cloudflare', name: 'Cloudflare', used: 'Workers AI is one of the vision models benchmarked in TrazIA-3D.' },
+      { icon: 'minio', name: 'MinIO', used: 'Object storage for Flight Delays and my thesis.' },
+    ],
+  },
+  {
+    group: 'AI',
+    items: [
+      { icon: 'pytorch', name: 'PyTorch', used: 'The hand-gesture CNN of HappyTaxi and RoboMaster detection for class.' },
+      { icon: 'scikitlearn', name: 'Scikit-learn', used: 'The models of European Bad Drivers.' },
+      { icon: 'text:XGB', name: 'XGBoost', used: 'The crash severity model of European Bad Drivers.' },
+      { icon: 'huggingface', name: 'Hugging Face', used: 'Pretrained vision models, fine-tuned in TrazIA-3D.' },
+      { icon: 'mlflow', name: 'MLflow', used: 'Tracks every retraining of Flight Delays.' },
+      { icon: 'langchain', name: 'LangChain', used: 'The RAG chatbot of HappyTaxi.' },
+      { icon: 'langgraph', name: 'LangGraph', used: 'Stateful agent workflows on top of LangChain.' },
+      { icon: 'ollama', name: 'Ollama', used: 'Local models for the HappyTaxi chatbots and TrazIA-3D.' },
+      { icon: 'text:RAG', name: 'RAG', used: 'The HappyTaxi chatbot answers from retrieved documents.' },
+      { icon: 'qdrant', name: 'Qdrant', used: 'The vector store behind the HappyTaxi RAG chatbot.' },
+    ],
+  },
+  {
+    group: 'Ops',
+    items: [
+      { icon: 'docker', name: 'Docker', used: 'HappyTaxi, Flight Delays, Albertitos and my thesis all run on Docker.' },
       { icon: 'kubernetes', name: 'Kubernetes', used: 'Flight Delays on Google Kubernetes Engine.' },
-      { icon: 'googlecloud', name: 'GCP', used: 'GKE, Compute Engine and Artifact Registry for Flight Delays.' },
-      { icon: 'prometheus', name: 'Prometheus', used: 'Metrics for HappyTaxi and Flight Delays.' },
-      { icon: 'grafana', name: 'Grafana', used: 'Dashboards for HappyTaxi and Flight Delays.' },
-      { icon: 'githubactions', name: 'Actions', used: 'CI for Atalaya and the checks of European Bad Drivers.' },
+      { icon: 'github', name: 'GitHub', used: 'Every project, with Actions for CI in Atalaya and European Bad Drivers.' },
+      { icon: 'prometheus', name: 'Prometheus', used: 'Metrics for HappyTaxi, Flight Delays and my thesis.' },
+      { icon: 'grafana', name: 'Grafana', used: 'Dashboards for HappyTaxi, Flight Delays and my thesis.' },
+      { icon: 'helm', name: 'Helm', used: 'Packaging Kubernetes deployments as charts.' },
+      { icon: 'opentelemetry', name: 'OpenTelemetry', used: 'Traces, metrics and logs with one open standard.' },
       { icon: 'linux', name: 'Linux', used: 'Where everything runs, WSL included.' },
-      { icon: 'vercel', name: 'Vercel', used: 'This site, the party games and the project demos.' },
     ],
   },
   {
     group: 'Code',
     items: [
-      { icon: 'python', name: 'Python', used: 'Albertitos, Atalaya, European Bad Drivers and the HappyTaxi APIs.' },
-      { icon: 'typescript', name: 'TypeScript', used: 'Bet366, the Albertitos console and this site.' },
+      { icon: 'python', name: 'Python', used: 'Albertitos, Atalaya, European Bad Drivers, TrazIA-3D and the HappyTaxi APIs.' },
+      { icon: 'text:SQL', name: 'SQL', used: 'ClickHouse in my thesis, DuckDB in European Bad Drivers, SQLite in Albertitos.' },
+      { icon: 'typescript', name: 'TypeScript', used: 'The portal of my thesis, Bet366, the Albertitos console and this site.' },
       { icon: 'fastapi', name: 'FastAPI', used: 'The capture and access APIs of HappyTaxi.' },
       { icon: 'react', name: 'React', used: 'The European Bad Drivers observatory and the Albertitos console.' },
-      { icon: 'nextdotjs', name: 'Next.js', used: 'The Albertitos console.' },
-      { icon: 'godotengine', name: 'Godot', used: 'Pokémon Spain, in GDScript.' },
       { icon: 'gnubash', name: 'Bash', used: 'Glue for every pipeline and deploy.' },
-      { icon: 'sqlite', name: 'SQL', used: 'SQLite in Albertitos, DuckDB in European Bad Drivers.' },
+      { icon: 'godotengine', name: 'Godot', used: 'Pokémon Spain, in GDScript.' },
+      { icon: 'scala', name: 'Scala', used: 'The Spark jobs of HappyTaxi and Flight Delays.' },
+      { icon: 'pydantic', name: 'Pydantic', used: 'The typed contracts of Albertitos, Atalaya and TrazIA-3D.' },
     ],
   },
 ];

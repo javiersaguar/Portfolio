@@ -2,6 +2,38 @@
 import Icon from './Icon.astro';
 import { site } from '../data/site';
 
+// 12x12 pixel sun and moon for the theme switch, drawn as rows like the sprites.
+const sun = [
+  '.....g......',
+  '.g...g...g..',
+  '..g.....g...',
+  '....ggg.....',
+  '...ggggg....',
+  'gg.ggggg.gg.',
+  '...ggggg....',
+  '....ggg.....',
+  '..g.....g...',
+  '.g...g...g..',
+  '.....g......',
+  '............',
+];
+const moon = [
+  '....ggg.....',
+  '..gggg......',
+  '.gggg.......',
+  '.ggg........',
+  'gggg........',
+  'gggg........',
+  'gggg.....g..',
+  'ggggg...gg..',
+  '.gggggggggg.',
+  '.ggggggggg..',
+  '..ggggggg...',
+  '....ggg.....',
+];
+const px = (rows: string[]) =>
+  rows.flatMap((row, y) => [...row].map((c, x) => (c === 'g' ? { x, y } : null)).filter(Boolean)) as { x: number; y: number }[];
+
 const links = [
   { href: '#projects', label: 'Projects' },
   { href: '#about', label: 'About' },
@@ -19,16 +51,28 @@ const links = [
     </a>
 
     <nav class="links" aria-label="Main">
-      {links.map((l) => <a href={l.href} class="pixel">{l.label}</a>)}
+      {links.map((l) => <a href={l.href} class="pixel" data-section={l.href.slice(1)}>{l.label}</a>)}
+      <span class="marker" aria-hidden="true"></span>
       <a href={site.github} target="_blank" rel="noopener" class="gh" aria-label="GitHub (opens in a new tab)">
         <Icon name="github" />
       </a>
     </nav>
 
-    <button class="menu-btn" aria-expanded="false" aria-controls="mobile-menu" aria-label="Menu">
-      <Icon name="list" class="open" />
-      <Icon name="x" class="close" />
-    </button>
+    <div class="tools">
+      <button type="button" class="theme-btn" aria-label="Switch to the light theme" title="Switch theme">
+        <svg class="sun" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true">
+          {px(sun).map((p) => <rect x={p.x} y={p.y} width="1" height="1" />)}
+        </svg>
+        <svg class="moon" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true">
+          {px(moon).map((p) => <rect x={p.x} y={p.y} width="1" height="1" />)}
+        </svg>
+      </button>
+
+      <button class="menu-btn" aria-expanded="false" aria-controls="mobile-menu" aria-label="Menu">
+        <Icon name="list" class="open" />
+        <Icon name="x" class="close" />
+      </button>
+    </div>
   </div>
 
   <nav id="mobile-menu" class="mobile" aria-label="Mobile" hidden>
@@ -50,11 +94,104 @@ const links = [
     -webkit-backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--line);
   }
+  .nav {
+    animation: nav-in 500ms var(--ease) both;
+  }
+  @keyframes nav-in {
+    from {
+      opacity: 0;
+      transform: translateY(-100%);
+    }
+  }
   .nav-inner {
     height: 64px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 24px;
+  }
+  .tools {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Theme switch: the icon of the current theme turns into the other one. */
+  .theme-btn {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    color: var(--accent);
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    cursor: pointer;
+    transition:
+      border-color 160ms ease,
+      transform 120ms var(--ease);
+  }
+  .theme-btn:active {
+    transform: scale(0.94);
+  }
+  .theme-btn svg {
+    grid-area: 1 / 1;
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
+    transition:
+      transform 260ms var(--ease),
+      opacity 200ms var(--ease);
+  }
+  .sun {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.6);
+  }
+  :global(:root[data-theme='light']) .sun {
+    opacity: 1;
+    transform: none;
+  }
+  :global(:root[data-theme='light']) .moon {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.6);
+  }
+  @media (prefers-color-scheme: light) {
+    :global(:root:not([data-theme='dark'])) .sun {
+      opacity: 1;
+      transform: none;
+    }
+    :global(:root:not([data-theme='dark'])) .moon {
+      opacity: 0;
+      transform: rotate(90deg) scale(0.6);
+    }
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .theme-btn:hover {
+      border-color: var(--accent-dim);
+    }
+    .theme-btn:hover svg {
+      animation: sprite-hop 420ms steps(4) both;
+    }
+  }
+
+  /* Marker under the section you are reading. It slides from link to link. */
+  .marker {
+    position: absolute;
+    left: 0;
+    bottom: -10px;
+    width: 100px;
+    height: 3px;
+    background: var(--accent);
+    transform-origin: left;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      transform 300ms var(--ease-in-out),
+      opacity 200ms ease;
+  }
+  .links a.current {
+    color: var(--accent);
   }
   .brand {
     display: inline-flex;
@@ -74,9 +211,11 @@ const links = [
     box-shadow: 3px 3px 0 var(--accent-dim);
   }
   .links {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 28px;
+    margin-left: auto;
   }
   .links a {
     font-size: 14px;
@@ -155,6 +294,57 @@ const links = [
 </style>
 
 <script>
+  import { unlock } from '../scripts/game';
+  import { currentTheme, toggleTheme } from '../scripts/theme';
+
+  // Theme switch.
+  const themeBtn = document.querySelector<HTMLButtonElement>('.theme-btn')!;
+  const label = () =>
+    themeBtn.setAttribute('aria-label', `Switch to the ${currentTheme() === 'light' ? 'dark' : 'light'} theme`);
+  label();
+  document.addEventListener('theme', label);
+  themeBtn.addEventListener('click', () => {
+    const r = themeBtn.getBoundingClientRect();
+    toggleTheme({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
+    unlock('theme');
+  });
+
+  // Marker under the link of the section in the middle of the screen.
+  const linksNav = document.querySelector<HTMLElement>('.links')!;
+  const marker = linksNav.querySelector<HTMLElement>('.marker')!;
+  const navLinks = [...linksNav.querySelectorAll<HTMLAnchorElement>('a[data-section]')];
+  const moveMarker = (a?: HTMLAnchorElement) => {
+    navLinks.forEach((l) => l.classList.toggle('current', l === a));
+    if (!a) {
+      marker.style.opacity = '0';
+      return;
+    }
+    // The marker is 100px wide; scaleX stretches it to the link, so only transform animates.
+    marker.style.transform = `translateX(${a.offsetLeft}px) scaleX(${a.offsetWidth / 100})`;
+    marker.style.opacity = '1';
+  };
+  const sectionIo = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) moveMarker(navLinks.find((l) => l.dataset.section === e.target.id));
+      }
+    },
+    { rootMargin: '-45% 0px -50% 0px' },
+  );
+  navLinks.forEach((l) => {
+    const sec = document.getElementById(l.dataset.section!);
+    if (sec) sectionIo.observe(sec);
+  });
+  const hero = document.getElementById('top');
+  if (hero) {
+    new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) moveMarker();
+      },
+      { rootMargin: '-45% 0px -50% 0px' },
+    ).observe(hero);
+  }
+
   const btn = document.querySelector<HTMLButtonElement>('.menu-btn')!;
   const menu = document.getElementById('mobile-menu')!;
   const set = (open: boolean) => {

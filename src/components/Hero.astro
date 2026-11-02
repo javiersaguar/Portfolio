@@ -179,10 +179,52 @@ const PIPS = 20;
       8px 8px 0 var(--accent-dim),
       inset 0 0 0 4px var(--bg);
   }
+  .frame {
+    position: relative;
+    overflow: hidden;
+  }
   .frame img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    /* Switches on like an old screen: a bright line that opens into the picture. */
+    animation: crt-on 620ms var(--ease) 750ms both;
+  }
+  @keyframes crt-on {
+    0% {
+      clip-path: inset(49.5% 0 49.5% 0);
+      filter: brightness(3) saturate(0);
+    }
+    45% {
+      clip-path: inset(49.5% 0 49.5% 0);
+      filter: brightness(2.2) saturate(0.4);
+    }
+    100% {
+      clip-path: inset(0 0 0 0);
+      filter: none;
+    }
+  }
+  /* Faint scanlines over the photo. */
+  .frame::after {
+    content: '';
+    position: absolute;
+    inset: 12px;
+    pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgb(0 0 0 / 0.12) 0 1px, transparent 1px 3px);
+    mix-blend-mode: multiply;
+  }
+  .ctas .btn:first-child :global(.icon) {
+    animation: nudge 1.4s var(--ease) 2.2s 3;
+  }
+  @keyframes nudge {
+    0%,
+    60%,
+    100% {
+      transform: none;
+    }
+    30% {
+      transform: translateY(4px);
+    }
   }
 
   .bars {

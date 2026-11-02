@@ -21,6 +21,7 @@ const {
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="theme-color" content="#0c0d0b" />
+    <meta name="color-scheme" content="dark light" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
@@ -29,13 +30,36 @@ const {
       document.documentElement.classList.remove('no-js');
       try {
         if (localStorage.getItem('js-palette') === 'gb') document.documentElement.dataset.palette = 'gb';
+        var t = localStorage.getItem('js-theme');
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
       } catch (e) {}
     </script>
   </head>
   <body>
     <slot />
     <script>
-      import { toast, toggleGameBoy, unlock } from '../scripts/game';
+      import { prefersReducedMotion, toast, toggleGameBoy, unlock } from '../scripts/game';
+      import { syncThemeColor } from '../scripts/theme';
+
+      syncThemeColor();
+      document.addEventListener('palette', syncThemeColor);
+
+      // Section titles drop in letter by letter, with a little jitter like the README.
+      document.querySelectorAll<HTMLElement>('.section-title').forEach((h) => {
+        if (h.children.length) return;
+        const text = h.textContent!.trim();
+        h.setAttribute('aria-label', text);
+        h.textContent = '';
+        [...text].forEach((c, i) => {
+          const s = document.createElement('span');
+          s.className = 'ch';
+          s.setAttribute('aria-hidden', 'true');
+          s.style.setProperty('--i', String(i));
+          s.style.setProperty('--j', String(Math.round(Math.random() * 160)));
+          s.textContent = c;
+          h.append(s);
+        });
+      });
 
       const io = new IntersectionObserver(
         (entries) => {
@@ -49,6 +73,50 @@ const {
         { threshold: 0.15, rootMargin: '0px 0px -40px 0px' },
       );
       document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+      // Numbers count up the first time they scroll into view: "540/540", "24.6M", "301,218".
+      // Text that is not a number (GKE) is scrambled into place instead.
+      const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      const countUp = (el: HTMLElement) => {
+        const final = el.textContent ?? '';
+        const m = final.match(/^(\d[\d,]*(?:\.\d+)?)(.*)$/);
+        const duration = 1100;
+        const t0 = performance.now();
+        const ease = (t: number) => 1 - Math.pow(1 - t, 4);
+        const frame = (now: number) => {
+          const t = Math.min(1, (now - t0) / duration);
+          if (m) {
+            const target = Number(m[1].replace(/,/g, ''));
+            const decimals = (m[1].split('.')[1] ?? '').length;
+            const value = target * ease(t);
+            const text = m[1].includes(',')
+              ? Math.round(value).toLocaleString('en-US')
+              : value.toFixed(decimals);
+            el.textContent = text + m[2];
+          } else {
+            const fixed = Math.floor(final.length * ease(t));
+            el.textContent =
+              final.slice(0, fixed) +
+              [...final.slice(fixed)].map(() => GLYPHS[Math.floor(Math.random() * GLYPHS.length)]).join('');
+          }
+          if (t < 1) requestAnimationFrame(frame);
+          else el.textContent = final;
+        };
+        requestAnimationFrame(frame);
+      };
+      if (!prefersReducedMotion()) {
+        const counters = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (!e.isIntersecting) continue;
+              counters.unobserve(e.target);
+              countUp(e.target as HTMLElement);
+            }
+          },
+          { threshold: 0.6 },
+        );
+        document.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => counters.observe(el));
+      }
 
       // Reaching the footer counts as exploring the whole page.
       const foot = document.querySelector('.foot');
