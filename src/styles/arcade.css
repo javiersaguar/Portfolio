@@ -1,0 +1,96 @@
+/* Capas de la escena: marcianos 1, enlaces 2, lectura 3, cañón 4, disparos 5, mira 6. */
+.arcade { min-height: 100svh; min-height: 100dvh; display: flex; flex-direction: column; margin: auto; position: relative; isolation: isolate; overflow: hidden; }
+.arcade-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px clamp(20px, 4vw, 72px); }
+.arcade-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; font-size: 13px; }
+.arcade-brand .brand-mark { display: grid; place-items: center; width: 32px; height: 32px; background: var(--accent); color: var(--accent-ink); font-size: 12px; box-shadow: 3px 3px 0 var(--accent-dim); }
+.arcade-heading { text-align: center; padding: 0 20px; }
+.arcade .pilot { color: var(--muted); font-size: 10px; letter-spacing: .12em; margin: 0 0 8px; }
+.arcade .pilot span { color: var(--accent); margin: 0 8px; }
+.arcade h1 { margin: 0; font-weight: 400; font-size: clamp(23px, 2.65vw, 43px); line-height: 1.25; }
+.arcade-subtitle { font-size: 14px; color: var(--ink-2); margin: 7px 0 0; }
+.arcade-stage { position: relative; flex: 1; min-height: 620px; width: 100%; max-width: 1640px; margin: 6px auto 0; }
+.constellation { position: absolute; inset: 6px 3% 310px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: 1fr 1fr; gap: 4px 12px; align-items: center; z-index: 2; }
+.invader { --target-shift: 0px; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; max-width: 240px; min-height: 192px; margin: auto; padding: 8px 4px 18px; text-decoration: none; outline-offset: 1px; transform: translateY(var(--target-shift)); -webkit-tap-highlight-color: transparent; }
+.invader-1, .invader-2 { --target-shift: 12px; }
+.invader-4 { transform: translate(8%, 0); } .invader-5 { transform: translate(-8%, 12px); }
+.invader-6 { transform: translate(8%, 12px); } .invader-7 { transform: translate(-8%, 0); }
+.alien { display: block; width: clamp(120px, 9.5vw, 170px); height: clamp(120px, 9.5vw, 170px); }
+.featured .alien { width: clamp(138px, 10.6vw, 188px); height: clamp(138px, 10.6vw, 188px); }
+.alien > svg { visibility: hidden; }
+.arcade-stage[data-alien-renderer='fallback'] .alien > svg { visibility: visible; }
+.no-js .alien > svg { visibility: visible; }
+.target-name { max-width: 100%; font-size: 13px; line-height: 1.4; margin-top: 5px; color: var(--ink-2); text-align: center; }
+.target-key { position: absolute; top: 7px; left: 10px; font-size: 10px; color: var(--muted); opacity: 0; transition: opacity 160ms ease; }
+.target-corners { position: absolute; inset: 2px 8px; opacity: 0; background: linear-gradient(var(--accent), var(--accent)) left top / 18px 2px no-repeat, linear-gradient(var(--accent), var(--accent)) left top / 2px 18px no-repeat, linear-gradient(var(--accent), var(--accent)) right top / 18px 2px no-repeat, linear-gradient(var(--accent), var(--accent)) right top / 2px 18px no-repeat, linear-gradient(var(--accent), var(--accent)) left bottom / 18px 2px no-repeat, linear-gradient(var(--accent), var(--accent)) left bottom / 2px 18px no-repeat, linear-gradient(var(--accent), var(--accent)) right bottom / 18px 2px no-repeat, linear-gradient(var(--accent), var(--accent)) right bottom / 2px 18px no-repeat; transition: opacity 160ms ease; pointer-events: none; }
+.invader:is(.is-active, :focus-visible) .target-corners, .invader:is(.is-active, :focus-visible) .target-key { opacity: 1; }
+.invader:is(.is-active, :focus-visible) .target-name { color: var(--accent); }
+.invader.is-hit .alien { opacity: 0; }
+.target-readout { position: absolute; left: 16%; bottom: 40px; width: min(25%, 320px); transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; text-align: center; min-height: 68px; pointer-events: none; z-index: 3; }
+.readout-kicker { color: var(--muted); font-size: 11px; letter-spacing: .04em; }
+.readout-name { color: var(--accent); font-size: 19px; line-height: 1.4; margin-top: 3px; }
+.readout-detail { color: var(--ink-2); font-size: 13px; margin-top: 3px; }
+.horizon { position: absolute; inset: auto 0 0; height: 220px; overflow: hidden; opacity: .55; pointer-events: none; mask-image: radial-gradient(ellipse at center bottom, #000 10%, transparent 75%); }
+.horizon span { position: absolute; width: 160%; height: 400px; left: -30%; top: 0; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 64px 42px; transform: perspective(200px) rotateX(58deg); transform-origin: top; }
+.cannon { position: absolute; width: 480px; height: 320px; left: 50%; bottom: -2px; transform: translateX(-50%); z-index: 4; pointer-events: none; }
+.cannon canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+/* La alternativa 2D solo aparece tras un fallo real, nunca mientras se carga el 3D. */
+.cannon-fallback { visibility: hidden; position: absolute; width: 144px; height: 143px; bottom: 10px; left: 50%; transform: translateX(-50%) scale(1.8); transform-origin: center bottom; }
+.cannon[data-cannon-renderer='fallback'] .cannon-fallback { visibility: visible; }
+.cannon[data-cannon-renderer='webgl'] .cannon-fallback { display: none; }
+.no-js .cannon-fallback { visibility: visible; }
+.cannon-shadow { position: absolute; width: 160px; height: 12px; background: color-mix(in srgb, var(--accent) 15%, transparent); left: -8px; bottom: 8px; }
+.cannon-base { position: absolute; width: 144px; height: 72px; left: 0; bottom: 8px; }
+.cannon-turret { position: absolute; width: 72px; height: 108px; left: 36px; bottom: 35px; transform-origin: 50% 87.5%; }
+.cannon-recoil { position: relative; width: 100%; height: 100%; }
+.cannon-pivot { position: absolute; width: 1px; height: 1px; bottom: 48.5px; left: 72px; }
+.muzzle { position: absolute; top: 0; left: 50%; width: 1px; height: 1px; }
+.crosshair { position: absolute; width: 34px; height: 34px; top: -17px; left: -17px; pointer-events: none; z-index: 6; opacity: 0; border: 1px solid var(--accent); border-radius: 50%; transition: opacity 120ms ease; }
+.crosshair::before, .crosshair::after { content: ''; position: absolute; background: var(--accent); }
+.crosshair::before { width: 44px; height: 1px; left: -6px; top: 16px; }
+.crosshair::after { height: 44px; width: 1px; top: -6px; left: 16px; }
+.crosshair span { position: absolute; inset: 13px; background: var(--bg); }
+.effects { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 5; }
+.arcade-footer { position: relative; display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; padding: 12px clamp(20px, 4vw, 72px) 18px; border-top: 1px solid var(--line); }
+.aim-help { font-size: 12px; color: var(--ink-2); }
+.keyboard-help { display: block; font-size: 10px; color: var(--muted); margin-top: 4px; }
+.touch-help { display: none; }
+.arcade-actions { display: flex; align-items: center; gap: 20px; }
+.direct-link { font-size: 12px; text-underline-offset: 4px; color: var(--ink-2); }
+.sound-toggle { color: var(--muted); background: none; border: 1px solid var(--line); padding: 8px 10px; min-height: 38px; font-size: 10px; cursor: pointer; white-space: nowrap; }
+.sound-toggle[aria-pressed='true'] { color: var(--accent); border-color: var(--accent-dim); }
+@media (hover: hover) and (pointer: fine) { .arcade-stage.is-tracking, .arcade-stage.is-tracking .invader { cursor: none; } .arcade-stage.is-tracking .crosshair { opacity: .8; } .direct-link:hover { color: var(--accent); } }
+@media (pointer: coarse) { .mouse-help, .keyboard-help { display: none; } .touch-help { display: inline; } }
+@media (max-height: 820px) and (min-width: 768px) {
+  .arcade-header { padding-top: 14px; padding-bottom: 12px; }
+  .arcade-subtitle { display: none; }
+  .arcade-stage { min-height: 530px; }
+  .constellation { bottom: 270px; top: 2px; }
+  .invader { min-height: 150px; padding-top: 4px; padding-bottom: 12px; }
+  .alien { width: 110px; height: 110px; } .featured .alien { width: 122px; height: 122px; }
+  .target-name { font-size: 11px; }
+  .cannon { width: 440px; height: 300px; }
+}
+@media (max-width: 767px) {
+  .arcade-header { padding: 16px 20px; }
+  .arcade-brand { gap: 9px; font-size: 10px; }
+  .arcade .pilot { font-size: 8px; margin-bottom: 8px; }
+  .arcade-subtitle { font-size: 12px; }
+  .arcade-stage { min-height: 620px; margin-top: 0; }
+  .constellation { inset: 6px 2% 330px; gap: 4px 0; }
+  .invader { min-height: 126px; padding: 4px 0 14px; }
+  .alien { width: 80px; height: 80px; } .featured .alien { width: 88px; height: 88px; }
+  .target-name { font-size: 9px; margin-top: 3px; overflow-wrap: anywhere; }
+  .target-corners { inset: 0; }
+  .target-key { display: none; }
+  .invader-1, .invader-2 { --target-shift: 4px; }
+  .invader-4, .invader-7 { transform: none; } .invader-5, .invader-6 { transform: translateY(8px); }
+  .target-readout { left: 50%; bottom: 245px; width: min(90%, 430px); }
+  .readout-name { font-size: 15px; } .readout-detail { font-size: 12px; }
+  .cannon { width: 330px; height: 235px; }
+  .arcade-footer { gap: 12px; flex-direction: column; align-items: center; padding: 12px 20px 18px; text-align: center; }
+  .arcade-actions { width: 100%; justify-content: space-between; gap: 12px; }
+  .direct-link { font-size: 11px; }
+}
+@media (max-width: 380px) { .arcade-brand > span:last-child { max-width: 86px; } .target-name { font-size: 8px; } .arcade h1 { font-size: 20px; } .alien { width: 68px; height: 68px; } .featured .alien { width: 74px; height: 74px; } }
+html[lang^='zh'] .target-name { font-size: 12px; }
+@media (prefers-reduced-motion: reduce) { .crosshair { display: none; } .arcade-stage.is-tracking, .arcade-stage.is-tracking .invader { cursor: auto; } }

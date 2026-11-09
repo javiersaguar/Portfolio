@@ -1,5 +1,8 @@
 ---
-import { about, loot, rightNow, site } from '../data/site';
+import { getContent, getLocale, translate } from '../data/i18n';
+const locale = getLocale(Astro.url);
+const t = (text: string) => translate(locale, text);
+const { about, loot, rightNow, site } = getContent(locale);
 
 const stats = [
   { k: 'Data', v: 9 },
@@ -15,28 +18,28 @@ const rich = (s: string) => esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong
 <section class="section" id="about">
   <div class="wrap about">
     <div class="text">
-      <h2 class="section-title reveal">About me</h2>
+      <h2 class="section-title reveal">{t("About me")}</h2>
       <div class="dialogue reveal" style="--d:1">
         <span class="speaker pixel" aria-hidden="true">Javier</span>
         <div class="lines">
           {about.map((p) => <p set:html={rich(p)} />)}
-          <p class="now"><span class="now-label pixel">Right now</span> {rightNow}</p>
+          <p class="now"><span class="now-label pixel">{t("Right now")}</span> {rightNow}</p>
         </div>
-        <button type="button" class="skip mono" hidden>Skip ▸▸</button>
+        <button type="button" class="skip mono" hidden>{t("Skip ▸▸")}</button>
         <span class="next" aria-hidden="true"></span>
       </div>
     </div>
 
-    <aside class="sheet reveal" style="--d:2" aria-label="Character sheet">
+    <aside class="sheet reveal" style="--d:2" aria-label={t("Character sheet")}>
       <header class="sheet-head">
-        <span class="pixel">Player 1</span>
-        <span class="pixel lvl">Lvl 4</span>
+        <span class="pixel">{t("Player 1")}</span>
+        <span class="pixel lvl">{t("Lvl 4")}</span>
       </header>
       <div class="sheet-id">
         <img src="/avatar.jpg" width="540" height="540" alt="" />
         <div>
           <p class="pixel who">{site.name}</p>
-          <p class="mono cls">Class: Data Engineer</p>
+          <p class="mono cls">{t("Class: Data Engineer")}</p>
         </div>
       </div>
 
@@ -44,8 +47,8 @@ const rich = (s: string) => esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong
         {
           stats.map((s) => (
             <div class="stat">
-              <dt class="mono">{s.k}</dt>
-              <dd aria-label={`${s.v} out of 10`}>
+              <dt class="mono">{t(s.k)}</dt>
+              <dd aria-label={`${s.v} ${t("out of 10")}`}>
                 {Array.from({ length: 10 }, (_, i) => (
                   <span class:list={['pip', { on: i < s.v }]} style={`--p:${i}`} />
                 ))}
@@ -55,7 +58,7 @@ const rich = (s: string) => esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong
         }
       </dl>
 
-      <p class="label pixel">Loot</p>
+      <p class="label pixel">{t("Loot")}</p>
       <ul class="inv">
         {
           loot.map((it) => (
@@ -67,8 +70,8 @@ const rich = (s: string) => esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong
         }
       </ul>
 
-      <p class="label pixel">Special move</p>
-      <p class="move">Give me a dataset and a weekend and I'll ship a pipeline around it.</p>
+      <p class="label pixel">{t("Special move")}</p>
+      <p class="move">{t("Give me a dataset and a weekend and I'll ship a pipeline around it.")}</p>
     </aside>
   </div>
 </section>

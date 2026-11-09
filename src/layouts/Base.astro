@@ -1,6 +1,10 @@
 ---
 import '../styles/global.css';
 import { site } from '../data/site';
+import { getLocale, translate } from '../data/i18n';
+import { arcadeCopy } from '../data/arcade-copy';
+
+const locale = getLocale(Astro.url);
 
 interface Props {
   title?: string;
@@ -8,13 +12,13 @@ interface Props {
 }
 
 const {
-  title = `${site.name} · Data Engineer`,
-  description = 'Final-year Data Engineering student at ETSIT UPM. Big Data projects, cybersecurity audits, and apps, tools and games built end to end.',
+  title = `${site.name} · ${arcadeCopy(locale).role}`,
+  description = translate(locale, 'Final-year Data Engineering student at ETSIT UPM. Big Data projects, cybersecurity audits, and apps, tools and games built end to end.'),
 } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en" class="no-js">
+<html lang={locale === 'zh' ? 'zh-Hans' : locale} class="no-js">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -32,7 +36,18 @@ const {
         if (localStorage.getItem('js-palette') === 'gb') document.documentElement.dataset.palette = 'gb';
         var t = localStorage.getItem('js-theme');
         if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+        var language = localStorage.getItem('js-language');
+        if (location.pathname === '/' && (language === 'es' || language === 'zh')) {
+          location.replace('/' + language + '/' + location.search + location.hash);
+        }
       } catch (e) {}
+      var section = location.hash.slice(1);
+      var isSection = ['top', 'projects', 'about', 'education', 'experience', 'skills', 'stack', 'certifications', 'activity', 'contact'].indexOf(section) !== -1;
+      document.documentElement.dataset.view = isSection ? 'portfolio' : 'arcade';
+      document.documentElement.dataset.section = isSection ? section : 'top';
+      var hasSeenIntro = false;
+      try { hasSeenIntro = sessionStorage.getItem('js-intro-seen-native-v1') === 'yes'; } catch (e) {}
+      document.documentElement.dataset.intro = !isSection && !hasSeenIntro && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 'pending' : 'done';
     </script>
   </head>
   <body>
@@ -40,6 +55,8 @@ const {
     <script>
       import { prefersReducedMotion, toast, toggleGameBoy, unlock } from '../scripts/game';
       import { syncThemeColor } from '../scripts/theme';
+      import { getLocale, translate } from '../data/i18n';
+      const locale = getLocale(location.href);
 
       syncThemeColor();
       document.addEventListener('palette', syncThemeColor);
@@ -138,7 +155,7 @@ const {
         pos = key === code[pos] ? pos + 1 : key === code[0] ? 1 : 0;
         if (pos === code.length) {
           pos = 0;
-          toast('Cheat code', toggleGameBoy() ? 'Game Boy mode on' : 'Game Boy mode off');
+          toast(translate(locale, 'Cheat code'), translate(locale, toggleGameBoy() ? 'Game Boy mode on' : 'Game Boy mode off'));
           unlock('konami');
         }
       });

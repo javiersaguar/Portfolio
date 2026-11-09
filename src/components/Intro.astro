@@ -1,0 +1,106 @@
+---
+import { arcadeCopy, pageLocale } from '../data/arcade-copy';
+
+const copy = arcadeCopy(pageLocale(Astro.url));
+const upperDark = [224, 448, 616, 817, 935, 1107, 1320];
+const upperLight = [214, 428, 615, 813, 940, 1110, 1335];
+const lowerDark = [153, 366, 560, 767, 958, 1160, 1386];
+const lowerLight = [153, 376, 573, 779, 979, 1178, 1388];
+const clip = (left: number, right: number, top: number, bottom: number) =>
+  `${top / 1024 * 100}% ${(1536 - right) / 1536 * 100}% ${(1024 - bottom) / 1024 * 100}% ${left / 1536 * 100}%`;
+const letters = Array.from({ length: 12 }, (_, index) => {
+  const column = index % 6;
+  const lower = index >= 6;
+  return {
+    dark: clip((lower ? lowerDark : upperDark)[column], (lower ? lowerDark : upperDark)[column + 1], lower ? 507 : 257, lower ? 770 : 505),
+    light: clip((lower ? lowerLight : upperLight)[column], (lower ? lowerLight : upperLight)[column + 1], lower ? 516 : 269, lower ? 772 : 513),
+    delay: 140 + index * 60,
+    x: (column - 2.5) * 13,
+    y: lower ? 42 + column * 4 : -42 - column * 4,
+  };
+});
+const fragments = Array.from({ length: 36 }, (_, index) => ({
+  x: 14 + (index * 17 % 72),
+  y: 28 + (index * 11 % 44),
+  dx: (index % 2 ? 1 : -1) * (42 + index * 4),
+  dy: (index % 3 - 1) * (48 + index * 3),
+  delay: 120 + index * 19,
+}));
+---
+
+<section class="native-intro" data-intro data-native-intro role="dialog" aria-modal="true" aria-label={copy.intro}>
+  <div class="intro-art" data-intro-art aria-hidden="true">
+    <div class="wordmark-layers">
+      {letters.map(letter => <span class="letter-fragment" style={`--clip-dark:${letter.dark};--clip-light:${letter.light};--delay:${letter.delay}ms;--from-x:${letter.x}px;--from-y:${letter.y}px;`} />)}
+      <span class="wordmark-complete"></span>
+    </div>
+    <div class="pixel-fragments">
+      {fragments.map(fragment => <span class="assembly-pixel" style={`left:${fragment.x}%;top:${fragment.y}%;--from-x:${fragment.dx}px;--from-y:${fragment.dy}px;--delay:${fragment.delay}ms;`} />)}
+    </div>
+    <div class="scanner-route"><span></span></div>
+    <span class="intro-lock intro-lock-left"></span><span class="intro-lock intro-lock-right"></span>
+  </div>
+  <p class="sr-only">Javier Saguar</p>
+  <button type="button" class="skip-native-intro mono" data-skip-intro>{copy.skip}<span aria-hidden="true"> ↗</span></button>
+</section>
+
+<style>
+  .native-intro { display: none; position: fixed; inset: 0; z-index: 40; place-items: center; overflow: hidden; isolation: isolate; background: var(--bg); color: var(--ink); opacity: 1; transition: opacity 180ms ease; }
+  :global(:root[data-intro='pending']) .native-intro { display: grid; }
+  :global(:root[data-intro='pending'] [data-arcade]) { visibility: hidden; }
+  .native-intro.is-leaving { opacity: 0; pointer-events: none; }
+  .intro-art { position: relative; width: min(1120px, 96vw, 140dvh); aspect-ratio: 3 / 2; opacity: 0; }
+  .intro-art[data-asset-ready='true'] { opacity: 1; }
+  .wordmark-layers { position: absolute; inset: 0; mix-blend-mode: lighten; }
+  [data-intro-theme='light'] .wordmark-layers { mix-blend-mode: darken; }
+  .letter-fragment, .wordmark-complete { position: absolute; inset: 0; background-image: var(--wordmark-image); background-size: 100% 100%; background-repeat: no-repeat; }
+  .letter-fragment { clip-path: inset(var(--clip-dark)); opacity: 0; }
+  [data-intro-theme='light'] .letter-fragment { clip-path: inset(var(--clip-light)); }
+  .wordmark-complete { opacity: 0; }
+  .pixel-fragments { position: absolute; inset: 0; pointer-events: none; }
+  .assembly-pixel { position: absolute; width: clamp(3px, .42vw, 6px); aspect-ratio: 1; background: var(--accent); opacity: 0; }
+  .scanner-route { position: absolute; inset: 0; pointer-events: none; opacity: 0; }
+  .scanner-route span { position: absolute; left: 50%; top: 24%; height: 53%; width: 2px; background: var(--accent); box-shadow: 0 0 16px var(--accent), 0 0 3px var(--ink); }
+  .intro-lock { position: absolute; top: 26%; bottom: 25%; width: 14px; border-top: 2px solid var(--accent); border-bottom: 2px solid var(--accent); opacity: 0; }
+  .intro-lock-left { left: 7%; border-left: 2px solid var(--accent); }
+  .intro-lock-right { right: 7%; border-right: 2px solid var(--accent); }
+  .is-playing .letter-fragment { animation: letter-assemble 650ms var(--ease) both; animation-delay: var(--delay); }
+  .is-playing .wordmark-complete { animation: name-lock 160ms ease 1600ms both; }
+  .is-playing .assembly-pixel { animation: pixel-assemble 850ms var(--ease) both; animation-delay: var(--delay); }
+  .is-playing .scanner-route { animation: scan-name 1300ms var(--ease-in-out) 160ms both; }
+  .is-playing .intro-lock { animation: target-lock 1700ms var(--ease) 260ms both; }
+  @keyframes letter-assemble {
+    from { opacity: 0; transform: translate3d(var(--from-x), var(--from-y), 0) scale(.96); }
+    68% { opacity: 1; }
+    to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+  }
+  @keyframes name-lock { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes pixel-assemble {
+    from { opacity: 0; transform: translate3d(var(--from-x), var(--from-y), 0); }
+    20% { opacity: .85; }
+    65% { opacity: .7; }
+    to { opacity: 0; transform: translate3d(0, 0, 0); }
+  }
+  @keyframes scan-name {
+    0% { opacity: 0; transform: translateX(-43%); }
+    12%, 70% { opacity: .9; }
+    100% { opacity: 0; transform: translateX(43%); }
+  }
+  @keyframes target-lock {
+    0% { opacity: 0; transform: scale(1.06); }
+    20%, 70% { opacity: .45; }
+    100% { opacity: 0; transform: scale(1); }
+  }
+  .skip-native-intro { position: absolute; right: clamp(20px, 4vw, 64px); bottom: 32px; min-height: 44px; padding: 10px 17px; border: 1px solid var(--line); color: var(--ink); background: var(--bg-2); font-size: 12px; cursor: pointer; transition: color 160ms ease, border-color 160ms ease; }
+  @media (hover: hover) and (pointer: fine) { .skip-native-intro:hover { color: var(--accent); border-color: var(--accent); } }
+  @media (max-width: 600px) { .intro-art { width: 116vw; max-width: none; } .skip-native-intro { bottom: 24px; } }
+  @media (prefers-reduced-motion: reduce) {
+    .native-intro { transition: none; }
+    .is-playing .letter-fragment, .is-playing .assembly-pixel, .is-playing .scanner-route, .is-playing .intro-lock { animation: none; }
+    .is-playing .wordmark-complete { animation: none; opacity: 1; }
+  }
+</style>
+
+<script>
+  import '../scripts/intro';
+</script>

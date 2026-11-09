@@ -1,6 +1,9 @@
 ---
 import Icon from './Icon.astro';
-import { site, skillBars, typedLines } from '../data/site';
+import { getContent, getLocale, translate } from '../data/i18n';
+const locale = getLocale(Astro.url);
+const t = (text: string) => translate(locale, text);
+const { site, skillBars, typedLines } = getContent(locale);
 
 const words = site.name.split(' ').map((w, wi, all) => {
   const offset = all.slice(0, wi).join('').length + wi;
@@ -13,7 +16,7 @@ const PIPS = 20;
 <section class="hero" id="top">
   <div class="wrap hero-grid">
     <div class="copy">
-      <p class="player pixel">Player 1 · Data Engineer</p>
+      <p class="player pixel">{t("Player 1 · Data Engineer")}</p>
       <h1 class="name pixel" aria-label={site.name}>
         {
           words.map((word) => (
@@ -26,7 +29,7 @@ const PIPS = 20;
         }
       </h1>
       <p class="sub">
-        Final-year <strong>Data Engineering</strong> student at {site.school}, Madrid.
+        {locale === 'es' ? <>Estudiante de último curso de <strong>Ingeniería de Datos</strong> en {site.school}, Madrid.</> : locale === 'zh' ? <>就读于马德里 {site.school} 的<strong>数据工程</strong>专业最后一年。</> : <>Final-year <strong>Data Engineering</strong> student at {site.school}, Madrid.</>}
       </p>
       <p class="typed pixel" data-lines={JSON.stringify(typedLines)}>
         <span class="prompt" aria-hidden="true">&gt;</span>
@@ -35,22 +38,22 @@ const PIPS = 20;
         <span class="sr-only">{typedLines.join('. ')}.</span>
       </p>
       <div class="ctas">
-        <a href="#projects" class="btn">See projects <Icon name="down" /></a>
+        <a href="#projects" class="btn">{t("See projects")}<Icon name="down" /></a>
         <a href={site.linkedin} target="_blank" rel="noopener" class="btn ghost"><Icon name="linkedin" /> LinkedIn</a>
-        <a href={`mailto:${site.email}`} class="btn ghost"><Icon name="mail" /> Email</a>
+        <a href={`mailto:${site.email}`} class="btn ghost"><Icon name="mail" />{t("Email")}</a>
       </div>
     </div>
 
     <figure class="portrait">
       <div class="frame">
-        <img src="/avatar.jpg" width="540" height="540" alt={`${site.name} giving a talk`} />
+        <img src="/avatar.jpg" width="540" height="540" alt={`${site.name} ${t("giving a talk")}`} />
       </div>
       <figcaption class="bars">
         {
           skillBars.map((label, b) => (
             <div class="skill">
               <span class="pixel skill-label">{label}</span>
-              <span class="pips" data-bar={b} role="img" aria-label={`${label}: max level`}>
+              <span class="pips" data-bar={b} role="img" aria-label={`${label}: ${t("max level")}`}>
                 {Array.from({ length: PIPS }, (_, i) => (
                   <span class="pip on" style={`--i:${i}`} />
                 ))}
@@ -295,52 +298,94 @@ const PIPS = 20;
 </style>
 
 <script>
-  import { prefersReducedMotion } from '../scripts/game';
-
-  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
-  // Typed lines: type, hold, erase, next.
+  const root = document.documentElement;
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const typed = document.querySelector<HTMLElement>('.typed')!;
   const text = typed.querySelector<HTMLElement>('.typed-text')!;
   const lines: string[] = JSON.parse(typed.dataset.lines!);
+  const bars = [...document.querySelectorAll<HTMLElement>('.pips')];
+  let run: AbortController | undefined;
 
-  async function typeLoop() {
-    for (let n = 0; ; n = (n + 1) % lines.length) {
+  // Cancelar también la espera elimina los temporizadores al ocultar la vista.
+  const sleep = (ms: number, signal: AbortSignal) => new Promise<boolean>((resolve) => {
+    if (signal.aborted) return resolve(false);
+    const stop = () => {
+      clearTimeout(timer);
+      signal.removeEventListener('abort', stop);
+      resolve(false);
+    };
+    const timer = window.setTimeout(() => {
+      signal.removeEventListener('abort', stop);
+      resolve(true);
+    }, ms);
+    signal.addEventListener('abort', stop, { once: true });
+  });
+
+  async function typeLoop(signal: AbortSignal) {
+    for (let n = 0; !signal.aborted; n = (n + 1) % lines.length) {
       const line = lines[n];
       for (let k = 1; k <= line.length; k++) {
+        if (signal.aborted) return;
         text.textContent = line.slice(0, k);
-        await sleep(70);
+        if (!await sleep(70, signal)) return;
       }
-      await sleep(1900);
+      if (!await sleep(1900, signal)) return;
       for (let k = line.length - 1; k >= 0; k--) {
+        if (signal.aborted) return;
         text.textContent = line.slice(0, k);
-        await sleep(28);
+        if (!await sleep(28, signal)) return;
       }
-      await sleep(350);
+      if (!await sleep(350, signal)) return;
     }
   }
 
-  // Skill bars: fill one pip at a time, glow at the top for three seconds,
-  // drop to zero at once and start again.
-  async function barLoop(bar: HTMLElement, startDelay: number) {
+  async function barLoop(bar: HTMLElement, startDelay: number, signal: AbortSignal) {
     const pips = [...bar.querySelectorAll<HTMLElement>('.pip')];
-    await sleep(startDelay);
-    for (;;) {
+    if (!await sleep(startDelay, signal)) return;
+    while (!signal.aborted) {
       bar.classList.remove('max');
       pips.forEach((p) => p.classList.remove('on'));
-      await sleep(450);
+      if (!await sleep(450, signal)) return;
       for (const p of pips) {
+        if (signal.aborted) return;
         p.classList.add('on');
-        await sleep(90);
+        if (!await sleep(90, signal)) return;
       }
       bar.classList.add('max');
-      await sleep(3000);
+      if (!await sleep(3000, signal)) return;
     }
   }
 
-  if (!prefersReducedMotion()) {
+  function syncAnimation() {
+    const visible = !document.hidden && root.dataset.view === 'portfolio' && root.dataset.section === 'top';
+    if (!visible || reducedMotion.matches) {
+      run?.abort();
+      run = undefined;
+      if (reducedMotion.matches) {
+        text.textContent = lines[0];
+        bars.forEach((bar) => {
+          bar.classList.remove('max');
+          bar.querySelectorAll('.pip').forEach((p) => p.classList.add('on'));
+        });
+      }
+      return;
+    }
+    // Una única ejecución comparte la cancelación entre el texto y las barras.
+    if (run) return;
+    run = new AbortController();
     text.textContent = '';
-    typeLoop();
-    document.querySelectorAll<HTMLElement>('.pips').forEach((bar, i) => barLoop(bar, 900 + i * 200));
+    void typeLoop(run.signal);
+    bars.forEach((bar, i) => void barLoop(bar, 900 + i * 200, run!.signal));
   }
+
+  document.addEventListener('visibilitychange', syncAnimation);
+  document.addEventListener('portfolio-view', syncAnimation);
+  document.addEventListener('portfolio-section', syncAnimation);
+  reducedMotion.addEventListener('change', syncAnimation);
+  addEventListener('pagehide', () => {
+    run?.abort();
+    run = undefined;
+  });
+  addEventListener('pageshow', syncAnimation);
+  syncAnimation();
 </script>

@@ -1,5 +1,8 @@
 ---
-import { certifications } from '../data/site';
+import { getContent, getLocale, translate } from '../data/i18n';
+const locale = getLocale(Astro.url);
+const t = (text: string) => translate(locale, text);
+const { certifications } = getContent(locale);
 import { brandIcons } from '../data/brand-icons';
 
 // Same medal as the README (scripts/build_assets.py, build_certifications).
@@ -9,7 +12,7 @@ const face = 'M50 62H62V50H94V62H106V74H114V98H106V110H94V122H62V110H50V98H42V74
 
 <section class="section certs-section" id="certifications">
   <div class="wrap">
-    <h2 class="section-title reveal">Certifications</h2>
+    <h2 class="section-title reveal">{t("Certifications")}</h2>
     <ul class="certs">
       {
         certifications.map((c, i) => (

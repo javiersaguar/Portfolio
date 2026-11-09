@@ -1,21 +1,22 @@
 ---
 import Icon from './Icon.astro';
 import Sprite from './Sprite.astro';
-import { categories, coursework, featured, sideQuests, site } from '../data/site';
+import { getContent, getLocale, translate } from '../data/i18n';
+const locale = getLocale(Astro.url);
+const t = (text: string) => translate(locale, text);
+const { categories, coursework, featured, sideQuests, site } = getContent(locale);
 
-// Three wide cards in a zigzag fill a three-column grid without gaps.
-const wide = new Set([0, 3, 4]);
+// Dos fichas anchas y cinco normales completan una cuadrícula de nueve celdas.
+const wide = new Set([0, 3]);
 const count = (id: string) => (id === 'all' ? featured.length : featured.filter((p) => p.tags.includes(id as never)).length);
 ---
 
 <section class="section" id="projects">
   <div class="wrap">
-    <h2 class="section-title reveal">Projects</h2>
-    <p class="section-lead reveal">
-      Data platforms, security tooling and a game. Built at hackathons, for class, and on weekends.
-    </p>
+    <h2 class="section-title reveal">{t("Projects")}</h2>
+    <p class="section-lead reveal">{t("Data platforms, security tooling and a game. Built at hackathons, for class, and on weekends.")}</p>
 
-    <div class="filters reveal" role="group" aria-label="Filter projects">
+    <div class="filters reveal" role="group" aria-label={t("Filter projects")}>
       {
         categories.map((c, i) => (
           <button type="button" class="filter pixel" data-filter={c.id} aria-pressed={i === 0 ? 'true' : 'false'}>
@@ -49,7 +50,7 @@ const count = (id: string) => (id === 'all' ? featured.length : featured.filter(
             <h3 class="pixel">{p.name}</h3>
             <p class="tagline">{p.tagline}</p>
             <p class="body">{p.body}</p>
-            <ul class="stack" aria-label="Stack">
+            <ul class="stack" aria-label={t("Stack")}>
               {p.stack.map((s, t) => (
                 <li class="tag" style={`--t:${t}`}>
                   {s}
@@ -59,21 +60,20 @@ const count = (id: string) => (id === 'all' ? featured.length : featured.filter(
             <div class="actions">
               {p.url && (
                 <a href={p.url} target="_blank" rel="noopener" class="link live">
-                  <Icon name="play" /> Live demo
-                </a>
+                  <Icon name="play" />{t("Live demo")}</a>
               )}
               <a href={`${site.github}/${p.repo}`} target="_blank" rel="noopener" class="link">
-                <Icon name="github" /> Code <Icon name="arrow" class="arrow" />
+                <Icon name="github" />{t("Code")}<Icon name="arrow" class="arrow" />
               </a>
             </div>
           </article>
         ))
       }
     </div>
-    <p class="none mono" hidden>Nothing here yet.</p>
+    <p class="none mono" hidden>{t("Nothing here yet.")}</p>
 
-    <h3 class="sub-title pixel reveal">Side quests</h3>
-    <p class="sub-lead reveal">Small things I made for game nights. All of them are live.</p>
+    <h3 class="sub-title pixel reveal">{t("Side quests")}</h3>
+    <p class="sub-lead reveal">{t("Small things I made for game nights. All of them are live.")}</p>
     <ul class="quests">
       {
         sideQuests.map((q, i) => (
@@ -81,12 +81,11 @@ const count = (id: string) => (id === 'all' ? featured.length : featured.filter(
             <a href={q.url} target="_blank" rel="noopener" class="quest">
               <Sprite name={q.sprite} size={44} delay={i * 0.3} />
               <span class="q-body">
-                <span class="q-tag mono">Side quest</span>
+                <span class="q-tag mono">{t("Side quest")}</span>
                 <span class="q-name pixel">{q.name}</span>
                 <span class="q-note">{q.note}</span>
               </span>
-              <span class="q-play pixel">
-                Play <Icon name="play" />
+              <span class="q-play pixel">{t("Play")}<Icon name="play" />
               </span>
             </a>
           </li>
@@ -95,7 +94,7 @@ const count = (id: string) => (id === 'all' ? featured.length : featured.filter(
     </ul>
 
     <div class="class-panel reveal">
-      <p class="class-title pixel">Also built for class</p>
+      <p class="class-title pixel">{t("Also built for class")}</p>
       <ul class="class-list">
         {
           coursework.map((c, i) => (

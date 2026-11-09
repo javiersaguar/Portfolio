@@ -1,6 +1,9 @@
 ---
 import Icon from './Icon.astro';
-import { site } from '../data/site';
+import { getContent, getLocale, translate } from '../data/i18n';
+const locale = getLocale(Astro.url);
+const t = (text: string) => translate(locale, text);
+const { site } = getContent(locale);
 
 type Day = { date: string; count: number; level: number };
 
@@ -25,27 +28,25 @@ while (cells.length % 7) cells.push(null);
 const best = days.reduce<Day | null>((b, d) => (!b || d.count > b.count ? d : b), null);
 const activeDays = days.filter((d) => d.count > 0).length;
 const fmt = (iso: string) =>
-  new Date(iso + 'T00:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+  new Date(iso + 'T00:00:00Z').toLocaleDateString(locale === 'en' ? 'en-GB' : locale === 'es' ? 'es-ES' : 'zh-CN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
 ---
 
 <section class="section" id="activity">
   <div class="wrap">
-    <h2 class="section-title reveal">A year in blocks</h2>
-    <p class="section-lead reveal">
-      Every day I commit is a block. The greener, the more I shipped. Press play and eat them.
-    </p>
+    <h2 class="section-title reveal">{t("A year in blocks")}</h2>
+    <p class="section-lead reveal">{t("Every day I commit is a block. The greener, the more I shipped. Press play and eat them.")}</p>
 
     {
       days.length ? (
         <div class="board reveal">
           <div class="scroller">
-            <div class="cal" role="img" aria-label={`${total} contributions in the last year`}>
+            <div class="cal" role="img" aria-label={`${total} ${t("contributions in the last year")}`}>
               {cells.map((d, i) =>
                 d ? (
                   <span
                     class={`c l${d.level}`}
                     style={`--w:${Math.floor(i / 7)}`}
-                    title={`${d.count} on ${fmt(d.date)}`}
+                    title={`${d.count} ${t("on")} ${fmt(d.date)}`}
                     data-level={d.level}
                     data-count={d.count}
                   />
@@ -61,16 +62,16 @@ const fmt = (iso: string) =>
             </p>
             <dl>
               <div>
-                <dt class="mono">Contributions</dt>
-                <dd class="pixel">{total.toLocaleString('en-US')}</dd>
+                <dt class="mono">{t("Contributions")}</dt>
+                <dd class="pixel">{total.toLocaleString(locale === 'en' ? 'en-US' : locale === 'es' ? 'es-ES' : 'zh-CN')}</dd>
               </div>
               <div>
-                <dt class="mono">Active days</dt>
+                <dt class="mono">{t("Active days")}</dt>
                 <dd class="pixel">{activeDays}</dd>
               </div>
               {best && (
                 <div>
-                  <dt class="mono">Best day</dt>
+                  <dt class="mono">{t("Best day")}</dt>
                   <dd class="pixel">
                     {best.count} <span class="mono small">{fmt(best.date)}</span>
                   </dd>
@@ -79,19 +80,16 @@ const fmt = (iso: string) =>
             </dl>
             <div class="game">
               <button type="button" class="btn play-btn">
-                <Icon name="gamepad" /> <span class="play-label">Play snake</span>
+                <Icon name="gamepad" /> <span class="play-label">{t("Play snake")}</span>
               </button>
               <p class="score mono" aria-live="polite" hidden></p>
-              <p class="how mono">Arrows or WASD · swipe on touch · Esc to quit</p>
+              <p class="how mono">{t("Arrows or WASD · swipe on touch · Esc to quit")}</p>
             </div>
-            <div class="legend mono" aria-hidden="true">
-              Less <span class="c l0" /><span class="c l1" /><span class="c l2" /><span class="c l3" /><span class="c l4" /> More
-            </div>
+            <div class="legend mono" aria-hidden="true">{t("Less")}<span class="c l0" /><span class="c l1" /><span class="c l2" /><span class="c l3" /><span class="c l4" />{t("More")}</div>
           </div>
         </div>
       ) : (
-        <p class="empty-state mono">
-          The calendar could not load right now. See it on <a href={site.github}>GitHub</a>.
+        <p class="empty-state mono">{t("The calendar could not load right now. See it on")} <a href={site.github}>GitHub</a>.
         </p>
       )
     }
@@ -258,6 +256,9 @@ const fmt = (iso: string) =>
 </style>
 
 <script>
+  import { getLocale, translate } from '../data/i18n';
+  const locale = getLocale(location.href);
+  const t = (text: string) => translate(locale, text);
   import { unlock } from '../scripts/game';
 
   // On narrow screens, start the calendar at the most recent weeks.
@@ -286,8 +287,8 @@ const fmt = (iso: string) =>
     let commits = 0;
     let touch: P | null = null;
 
-    const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
-    const tally = () => `${plural(blocks, 'block')} · ${plural(commits, 'contribution')} eaten`;
+    const plural = (n: number, word: string) => `${n} ${t(n === 1 ? word : word + 's')}`;
+    const tally = () => `${plural(blocks, 'block')} · ${plural(commits, 'contribution')} ${t('eaten')}`;
 
     const show = (text: string) => {
       score.hidden = false;
@@ -313,7 +314,7 @@ const fmt = (iso: string) =>
     const stop = (message?: string) => {
       if (timer !== undefined) clearInterval(timer);
       timer = undefined;
-      label.textContent = 'Play again';
+      label.textContent = t('Play again');
       if (message) {
         board.classList.add('over');
         show(message);
@@ -327,7 +328,7 @@ const fmt = (iso: string) =>
       if (queued.length) dir = queued.shift()!;
       const head = { x: (snake[0].x + dir.x + COLS) % COLS, y: (snake[0].y + dir.y + ROWS) % ROWS };
       if (snake.some((p) => p.x === head.x && p.y === head.y)) {
-        stop(`Game over · ${tally()}`);
+        stop(`${t('Game over')} · ${tally()}`);
         return;
       }
       snake.unshift(head);
@@ -340,7 +341,7 @@ const fmt = (iso: string) =>
         if (blocks === 10) unlock('snake');
         if (!cells.some(isFood)) {
           draw();
-          stop(`You ate the whole year · ${plural(commits, 'contribution')}`);
+          stop(`${t('You ate the whole year')} · ${plural(commits, 'contribution')}`);
           return;
         }
       } else {
@@ -364,8 +365,8 @@ const fmt = (iso: string) =>
         { x: x - 1, y: 3 },
         { x: x - 2, y: 3 },
       ];
-      show('0 blocks · go!');
-      label.textContent = 'Quit';
+      show(t('0 blocks · go!'));
+      label.textContent = t('Quit');
       draw();
       timer = window.setInterval(tick, 115);
     };
@@ -388,6 +389,14 @@ const fmt = (iso: string) =>
     };
 
     button.addEventListener('click', () => (timer === undefined ? start() : stop()));
+    // Salir al menú termina la partida para no mantener controles ni un juego oculto.
+    document.addEventListener('portfolio-view', (event) => {
+      if ((event as CustomEvent).detail === 'arcade' && timer !== undefined) stop();
+    });
+    document.addEventListener('portfolio-section', (event) => {
+      if ((event as CustomEvent).detail !== 'activity' && timer !== undefined) stop();
+    });
+    addEventListener('pagehide', () => { if (timer !== undefined) stop(); });
     addEventListener('keydown', (e) => {
       if (timer === undefined) return;
       if (e.key === 'Escape') return stop();

@@ -1,14 +1,18 @@
+import { getLocale, translate } from '../data/i18n';
+
+const t = (text: string) => translate(getLocale(location.href), text);
+
 // The small game layer of the site: achievements with toasts and the
 // Game Boy palette. Everything is optional and lives in localStorage.
 
 export const achievements = {
-  filter: { title: 'Picky player', hint: 'Filter the projects.' },
-  inventory: { title: 'Inventory check', hint: 'Inspect an item in the tech stack.' },
-  root: { title: 'Root access', hint: 'Run a command in the terminal.' },
-  snake: { title: 'Snake charmer', hint: 'Eat 10 blocks in the snake game.' },
-  theme: { title: 'Lights switch', hint: 'Switch between the light and dark theme.' },
-  explorer: { title: 'Explorer', hint: 'Reach the end of the page.' },
-  konami: { title: 'Cheat code', hint: 'Up, up, down, down, left, right, left, right, B, A.' },
+  filter: { title: t('Picky player'), hint: t('Filter the projects.') },
+  inventory: { title: t('Inventory check'), hint: t('Inspect an item in the tech stack.') },
+  root: { title: t('Root access'), hint: t('Run a command in the terminal.') },
+  snake: { title: t('Snake charmer'), hint: t('Eat 10 blocks in the snake game.') },
+  theme: { title: t('Lights switch'), hint: t('Switch between the light and dark theme.') },
+  explorer: { title: t('Explorer'), hint: t('Reach the end of the page.') },
+  konami: { title: t('Cheat code'), hint: t('Up, up, down, down, left, right, left, right, B, A.') },
 } as const;
 
 export type AchievementId = keyof typeof achievements;
@@ -54,11 +58,11 @@ export function toast(label: string, text: string): void {
   item.className = 'toast';
   const l = document.createElement('span');
   l.className = 'toast-label';
-  l.textContent = label;
-  const t = document.createElement('span');
-  t.className = 'toast-text';
-  t.textContent = text;
-  item.append(l, t);
+  l.textContent = t(label);
+  const textNode = document.createElement('span');
+  textNode.className = 'toast-text';
+  textNode.textContent = t(text);
+  item.append(l, textNode);
   box.append(item);
   setTimeout(() => item.classList.add('out'), 3200);
   setTimeout(() => item.remove(), 3700);

@@ -1,5 +1,8 @@
 ---
-import { stack } from '../data/site';
+import { getContent, getLocale, translate } from '../data/i18n';
+const locale = getLocale(Astro.url);
+const t = (text: string) => translate(locale, text);
+const { stack } = getContent(locale);
 import { brandIcons } from '../data/brand-icons';
 
 const total = stack.reduce((n, g) => n + g.items.length, 0);
@@ -12,17 +15,15 @@ const textOf = (icon: string) => (icon.startsWith('text:') ? icon.slice(5) : nul
 
 <section class="section" id="stack">
   <div class="wrap">
-    <h2 class="section-title reveal">Tech stack</h2>
-    <p class="section-lead reveal">
-      An inventory, not a badge wall. Hover an item or move with the arrow keys to see where I used it.
-    </p>
+    <h2 class="section-title reveal">{t("Tech stack")}</h2>
+    <p class="section-lead reveal">{t("An inventory, not a badge wall. Hover an item or move with the arrow keys to see where I used it.")}</p>
 
     <div class="inventory reveal">
       <div class="inv-head">
-        <span class="pixel inv-title">Inventory</span>
+        <span class="pixel inv-title">{t("Inventory")}</span>
         <span class="inv-right">
           <span class="mono inv-hud" aria-hidden="true">{stack[0].group} / {first.name}</span>
-          <span class="mono inv-count">{total} items</span>
+          <span class="mono inv-count">{total} {t("items")}</span>
         </span>
       </div>
 

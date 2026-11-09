@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+import Arcade from './Arcade.astro';
+import Nav from './Nav.astro';
+import Hero from './Hero.astro';
+import Projects from './Projects.astro';
+import About from './About.astro';
+import Background from './Background.astro';
+import Stack from './Stack.astro';
+import Certifications from './Certifications.astro';
+import Activity from './Activity.astro';
+import Contact from './Contact.astro';
+---
+<Base>
+  <Arcade />
+  <div class="portfolio-view">
+    <Nav />
+    <main id="portfolio-content" data-section-host>
+      <Hero />
+      <Projects />
+      <About />
+      <Background />
+      <Stack />
+      <Certifications />
+      <Activity />
+      <Contact />
+    </main>
+  </div>
+</Base>

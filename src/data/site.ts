@@ -42,6 +42,18 @@ export type Project = {
 
 export const featured: Project[] = [
   {
+    name: 'Cyber situational awareness',
+    repo: 'TFG-Ciberconciencia',
+    sprite: 'tower',
+    tags: ['data', 'security'],
+    tagline: 'From raw security telemetry to explainable incidents.',
+    body: "My bachelor's thesis, in progress: canonical OCSF events, Sigma detections and multi-stage correlation, with Neo4j attack graphs and explainable prioritisation. Built on Redpanda, Apache Flink and ClickHouse.",
+    stat: { value: 'OCSF', label: 'multi-stage detection' },
+    stack: ['Redpanda', 'Flink', 'Sigma', 'ClickHouse', 'Neo4j', 'FastAPI'],
+    url: 'https://tfg-ciberconciencia.vercel.app/',
+    context: "Bachelor's thesis · in progress",
+  },
+  {
     name: 'Albertitos',
     repo: 'AlbertitosAI-DecisionEngine',
     sprite: 'invoice',

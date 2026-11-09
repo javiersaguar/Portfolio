@@ -1,6 +1,9 @@
 ---
 import Icon from './Icon.astro';
-import { certifications, featured, sideQuests, site, stack } from '../data/site';
+import { getContent, getLocale, translate } from '../data/i18n';
+const locale = getLocale(Astro.url);
+const t = (text: string) => translate(locale, text);
+const { certifications, featured, sideQuests, site, stack } = getContent(locale);
 
 const channels = [
   { name: 'GitHub', handle: `@${site.handle}`, href: site.github, icon: 'github' as const },
@@ -22,8 +25,8 @@ const termData = {
 
 <section class="section" id="contact">
   <div class="wrap">
-    <h2 class="section-title reveal">Contact</h2>
-    <p class="section-lead reveal">Looking for internships and junior roles in data engineering. Say hi.</p>
+    <h2 class="section-title reveal">{t("Contact")}</h2>
+    <p class="section-lead reveal">{t("Looking for internships and junior roles in data engineering. Say hi.")}</p>
 
     <ul class="channels">
       {
@@ -31,12 +34,12 @@ const termData = {
           <li class="reveal" style={`--d:${i}`}>
             <a href={c.href} target={c.icon === 'mail' ? undefined : '_blank'} rel="noopener">
               <Icon name={c.icon} class="c-icon" />
-              <span class="c-name pixel">{c.name}</span>
+              <span class="c-name pixel">{t(c.name)}</span>
               <span class="c-handle mono">{c.handle}</span>
               {c.icon !== 'mail' && <Icon name="arrow" class="c-arrow" />}
             </a>
             {c.icon === 'mail' && (
-              <button type="button" class="copy" data-copy={site.email} aria-label="Copy email address">
+              <button type="button" class="copy" data-copy={site.email} aria-label={t("Copy email address")}>
                 <Icon name="copy" />
               </button>
             )}
@@ -51,12 +54,12 @@ const termData = {
         <span>guest@{site.domain}</span>
       </div>
       <div class="term-out mono" aria-live="polite">
-        <p>hi. this is javier's terminal.</p>
-        <p>type a command and press enter, or use the buttons below.</p>
+        <p>{t("hi. this is javier's terminal.")}</p>
+        <p>{t("type a command and press enter, or use the buttons below.")}</p>
       </div>
       <form class="term-in mono">
         <label for="term-cmd"><span class="prompt">guest</span>~ $</label>
-        <input id="term-cmd" autocomplete="off" spellcheck="false" placeholder="type a command" aria-label="Terminal command" />
+        <input id="term-cmd" autocomplete="off" spellcheck="false" placeholder={t("type a command")} aria-label={t("Terminal command")} />
       </form>
       <div class="term-btns">
         {['help', 'whoami', 'projects', 'stack', 'achievements'].map((c) => (
@@ -69,10 +72,10 @@ const termData = {
 
 <footer class="foot">
   <div class="wrap foot-inner mono">
-    <span>Built block by block in Madrid. © {new Date().getFullYear()} {site.name}</span>
+    <span>{t("Built block by block in Madrid. ©")} {new Date().getFullYear()} {site.name}</span>
     <span class="foot-links">
-      <button type="button" class="gb-toggle mono" aria-pressed="false">Game Boy mode</button>
-      <a href="#top">Back to top</a>
+      <button type="button" class="gb-toggle mono" aria-pressed="false">{t("Game Boy mode")}</button>
+      <a href="#top">{t("Back to top")}</a>
     </span>
   </div>
 </footer>
@@ -288,6 +291,8 @@ const termData = {
 </style>
 
 <script>
+  import { getLocale, translate } from '../data/i18n';
+  const t = (text: string) => translate(getLocale(location.href), text);
   import { achievements, isGameBoy, toast, toggleGameBoy, unlock, unlocked } from '../scripts/game';
   import { toggleTheme } from '../scripts/theme';
 
@@ -342,7 +347,7 @@ const termData = {
   const print = (text: string, cls = '') => {
     const p = document.createElement('p');
     if (cls) p.className = cls;
-    p.textContent = text;
+    p.textContent = t(text);
     out.appendChild(p);
   };
   const link = (label: string, href: string) => {
@@ -377,10 +382,10 @@ const termData = {
           '  github        open my GitHub',
           '  linkedin      open my LinkedIn',
           '  clear         clean the screen',
-        ].join('\n'),
+        ].map((line) => t(line)).join('\n'),
       ),
     whoami: () =>
-      print(`${data.name}. final-year data engineering student. big data projects, cybersecurity audits, apps, tools and games.`),
+      print(`${data.name}. ${t("final-year data engineering student. big data projects, cybersecurity audits, apps, tools and games.")}`),
     projects: () => {
       data.projects.forEach((p) => print(`> ${p.name.padEnd(22)} ${p.tagline}`));
       print('scroll up to #projects for the details.', 'echo');
@@ -394,18 +399,22 @@ const termData = {
       link(`email     ${data.email}`, `mailto:${data.email}`);
     },
     email: () => {
-      copy(data.email).then((ok) => print(ok ? `copied ${data.email} to the clipboard.` : data.email, ok ? 'ok' : ''));
+      copy(data.email).then((ok) => print(ok ? `${data.email}: ${t("Copied to the clipboard.")}` : data.email, ok ? 'ok' : ''));
     },
     achievements: () => {
       const have = unlocked();
       const ids = Object.keys(achievements) as (keyof typeof achievements)[];
       ids.forEach((id) => print(`${have.has(id) ? '[x]' : '[ ]'} ${achievements[id].title.padEnd(16)} ${achievements[id].hint}`));
-      print(`${have.size}/${ids.length} unlocked.`, 'echo');
+      print(`${have.size}/${ids.length} ${t("unlocked.")}`, 'echo');
     },
     snake: () => {
       print('loading snake...', 'ok');
-      document.getElementById('activity')?.scrollIntoView({ behavior: 'smooth' });
-      setTimeout(() => document.querySelector<HTMLButtonElement>('#activity .play-btn')?.click(), 600);
+      location.hash = 'activity';
+      setTimeout(() => {
+        if (document.documentElement.dataset.view === 'portfolio' && document.documentElement.dataset.section === 'activity') {
+          document.querySelector<HTMLButtonElement>('#activity .play-btn')?.click();
+        }
+      }, 180);
     },
     theme: () => {
       const r = input.getBoundingClientRect();
@@ -437,7 +446,7 @@ const termData = {
     const name = cmd.split(/\s+/)[0];
     const fn = commands[name];
     if (fn) fn();
-    else print(`command not found: ${name}. try "help".`);
+    else print(`${t("command not found:")} ${name}. ${t('try "help".')}`);
     out.scrollTop = out.scrollHeight;
     unlock('root');
   };

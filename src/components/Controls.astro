@@ -1,0 +1,72 @@
+---
+import { arcadeCopy, pageLocale } from '../data/arcade-copy';
+const copy = arcadeCopy(pageLocale(Astro.url));
+const locale = pageLocale(Astro.url);
+---
+
+<div class="preferences">
+  <label class="language-control">
+    <span class="sr-only">{copy.language}</span>
+    <span class="language-mark" aria-hidden="true">A<span>文</span></span>
+    <select data-language aria-label={copy.language}>
+      <option value="en" selected={locale === 'en'} lang="en">EN</option>
+      <option value="es" selected={locale === 'es'} lang="es">ES</option>
+      <option value="zh" selected={locale === 'zh'} lang="zh-Hans">中文</option>
+    </select>
+  </label>
+  <button type="button" class="preference-button" data-theme-toggle data-label-light={copy.light} data-label-dark={copy.dark} aria-label={copy.theme} title={copy.theme}>
+    <svg class="theme-symbol" viewBox="0 0 16 16" fill="none" aria-hidden="true" shape-rendering="crispEdges">
+      <path class="theme-moon" d="M9 1H5V3H3V5H1V11H3V13H5V15H11V13H13V11H15V7H13V9H11V11H7V9H5V5H7V3H9V1Z" fill="currentColor" />
+      <g class="theme-sun" fill="currentColor"><path d="M6 4H10V6H12V10H10V12H6V10H4V6H6Z"/><path d="M7 0H9V2H7ZM7 14H9V16H7ZM0 7H2V9H0ZM14 7H16V9H14ZM2 2H4V4H2ZM12 2H14V4H12ZM2 12H4V14H2ZM12 12H14V14H12Z"/></g>
+    </svg>
+  </button>
+</div>
+<noscript>
+  <nav class="language-fallback" aria-label={copy.language}><a href="/" lang="en">English</a><a href="/es/" lang="es">Español</a><a href="/zh/" lang="zh-Hans">中文</a></nav>
+</noscript>
+
+<style>
+  .preferences { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .language-fallback { display: flex; gap: 10px; font-size: 12px; }
+  .language-control { display: flex; align-items: center; gap: 7px; padding-left: 10px; min-height: 40px; border: 1px solid var(--line); background: var(--bg-2); color: var(--ink-2); }
+  .language-mark { font-family: var(--font-read); font-weight: 600; font-size: 13px; line-height: 1; }
+  .language-mark span { margin-left: -2px; position: relative; top: 5px; font-size: 10px; }
+  select { width: 66px; min-height: 38px; border: 0; border-radius: 0; padding: 0 6px; color: var(--ink); background: var(--bg-2); font-family: var(--font-mono); font-size: 12px; cursor: pointer; }
+  .preference-button { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid var(--line); color: var(--accent); background: var(--bg-2); cursor: pointer; transition: border-color 160ms ease, transform 120ms var(--ease); }
+  .preference-button:active { transform: scale(.96); }
+  .theme-symbol { width: 19px; height: 19px; }
+  .theme-sun { display: none; }
+  :global(:root[data-theme='light']) .theme-sun { display: block; }
+  :global(:root[data-theme='light']) .theme-moon { display: none; }
+  @media (prefers-color-scheme: light) {
+    :global(:root:not([data-theme='dark'])) .theme-sun { display: block; }
+    :global(:root:not([data-theme='dark'])) .theme-moon { display: none; }
+  }
+  @media (hover: hover) and (pointer: fine) { .preference-button:hover, .language-control:hover { border-color: var(--accent); } }
+</style>
+
+<script>
+  import { currentTheme, toggleTheme } from '../scripts/theme';
+  import { unlock } from '../scripts/game';
+
+  const themeButtons = document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]');
+  const updateLabels = () => themeButtons.forEach(button => {
+    button.setAttribute('aria-label', (currentTheme() === 'light' ? button.dataset.labelDark : button.dataset.labelLight)!);
+  });
+  updateLabels();
+  document.addEventListener('theme', updateLabels);
+  themeButtons.forEach(button => button.addEventListener('click', () => {
+    const rect = button.getBoundingClientRect();
+    toggleTheme({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+    unlock('theme');
+  }));
+  document.querySelectorAll<HTMLSelectElement>('[data-language]').forEach(select => {
+    select.addEventListener('change', () => {
+      const locale = select.value;
+      try { localStorage.setItem('js-language', locale); } catch { /* La navegación funciona sin almacenamiento. */ }
+      const destination = new URL(locale === 'en' ? '/' : `/${locale}/`, location.origin);
+      destination.hash = location.hash;
+      location.assign(destination);
+    });
+  });
+</script>

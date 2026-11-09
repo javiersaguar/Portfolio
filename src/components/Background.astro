@@ -1,0 +1,269 @@
+---
+import { background, type BackgroundLocale } from '../data/background';
+
+const segment = Astro.url.pathname.split('/').filter(Boolean)[0];
+const locale: BackgroundLocale = segment === 'es' || segment === 'zh' ? segment : 'en';
+const content = background[locale];
+---
+
+<section class="section education-section" id="education" aria-labelledby="education-title">
+  <div class="wrap">
+    <h2 class="section-title reveal" id="education-title">{content.education.title}</h2>
+    <p class="section-lead reveal">{content.education.lead}</p>
+    <div class="education-layout">
+      <article class="degree reveal" style="--d:1">
+        <div class="degree-meta mono">
+          <span>{content.education.period}</span>
+          <span>{content.education.status}</span>
+        </div>
+        <h3>{content.education.degree}</h3>
+        <p class="school">{content.education.school}</p>
+        <p class="degree-description">{content.education.description}</p>
+        <h4 class="pixel">{content.education.subjectsLabel}</h4>
+        <ul class="subjects">
+          {content.education.subjects.map((subject) => <li>{subject}</li>)}
+        </ul>
+      </article>
+      <aside class="languages reveal" style="--d:2" aria-labelledby="languages-title">
+        <h3 class="pixel" id="languages-title">{content.education.languagesLabel}</h3>
+        <dl>
+          {content.education.languages.map((language) => (
+            <div>
+              <dt>{language.name}</dt>
+              <dd class="mono">{language.level}</dd>
+            </div>
+          ))}
+        </dl>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="section experience-section" id="experience" aria-labelledby="experience-title">
+  <div class="wrap">
+    <h2 class="section-title reveal" id="experience-title">{content.experience.title}</h2>
+    <p class="section-lead reveal">{content.experience.lead}</p>
+    <ol class="career-path">
+      {content.experience.entries.map((entry, index) => (
+        <li class="career-entry reveal" style={`--d:${index + 1}`}>
+          <div class="career-date mono">{entry.period}</div>
+          <div class="career-copy">
+            <h3>{entry.role}</h3>
+            <p class="organization pixel">{entry.organization}</p>
+            <p>{entry.description}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<section class="section skills-section" id="skills" aria-labelledby="skills-title">
+  <div class="wrap">
+    <h2 class="section-title reveal" id="skills-title">{content.skills.title}</h2>
+    <p class="section-lead reveal">{content.skills.lead}</p>
+    <dl class="people-skills">
+      {content.skills.entries.map((skill, index) => (
+        <div class="people-skill reveal" style={`--d:${index + 1}`}>
+          <dt>{skill.name}</dt>
+          <dd>{skill.evidence}</dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>
+
+<style>
+  .education-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 260px;
+    gap: 40px;
+    align-items: start;
+  }
+  .degree {
+    padding: 28px 32px;
+    border: 3px solid var(--ink);
+    box-shadow: 6px 6px 0 var(--accent-dim);
+    background: var(--bg-2);
+  }
+  .degree-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px 20px;
+    color: var(--accent);
+    font-size: 12px;
+  }
+  .degree h3 {
+    font-size: clamp(23px, 3vw, 32px);
+    line-height: 1.2;
+    margin: 20px 0 10px;
+  }
+  .school {
+    color: var(--ink);
+    font-weight: 600;
+    margin: 0 0 18px;
+  }
+  .degree-description {
+    margin: 0 0 26px;
+    color: var(--ink-2);
+  }
+  .degree h4 {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--muted);
+    margin: 0 0 12px;
+  }
+  .subjects {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 24px;
+  }
+  .subjects li {
+    border-left: 3px solid var(--accent);
+    padding-left: 12px;
+    color: var(--ink-2);
+    font-size: 14px;
+  }
+  .languages {
+    border-top: 3px solid var(--accent);
+    padding-top: 22px;
+  }
+  .languages h3 {
+    font-size: 17px;
+    font-weight: 400;
+    margin: 0 0 24px;
+  }
+  .languages dl {
+    display: grid;
+    gap: 22px;
+    margin: 0;
+  }
+  .languages dt {
+    font-size: 17px;
+    font-weight: 600;
+  }
+  .languages dd {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 3px 0 0;
+  }
+  .career-path {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 36px;
+  }
+  .career-entry {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 36px;
+    position: relative;
+  }
+  .career-date {
+    padding-top: 6px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .career-copy {
+    position: relative;
+    border-left: 3px solid var(--line);
+    padding: 0 0 8px 30px;
+  }
+  .career-copy::before {
+    content: '';
+    position: absolute;
+    width: 11px;
+    height: 11px;
+    left: -7px;
+    top: 8px;
+    background: var(--accent);
+    box-shadow: 0 0 0 5px var(--bg);
+  }
+  .career-copy h3 {
+    font-size: clamp(21px, 2.6vw, 27px);
+    line-height: 1.25;
+    margin: 0 0 9px;
+  }
+  .career-copy .organization {
+    font-size: 13px;
+    color: var(--accent);
+    margin: 0 0 12px;
+  }
+  .career-copy p:last-child {
+    max-width: 65ch;
+    color: var(--ink-2);
+    margin: 0;
+  }
+  .people-skills {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 40px 64px;
+  }
+  .people-skill {
+    padding-left: 22px;
+    border-left: 4px solid var(--accent-dim);
+  }
+  .people-skill dt {
+    font-size: 23px;
+    font-weight: 650;
+    line-height: 1.25;
+    margin-bottom: 14px;
+  }
+  .people-skill dd {
+    color: var(--ink-2);
+    max-width: 50ch;
+    margin: 0;
+  }
+  @media (max-width: 767px) {
+    .education-layout,
+    .people-skills {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 32px;
+    }
+    .degree {
+      padding: 24px 20px;
+      box-shadow: 5px 5px 0 var(--accent-dim);
+    }
+    .degree-meta {
+      flex-direction: column;
+      gap: 4px;
+    }
+    .subjects {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .languages dl {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .languages dd {
+      overflow-wrap: anywhere;
+    }
+    .career-entry {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 12px;
+    }
+    .career-date {
+      padding-left: 26px;
+      padding-top: 0;
+    }
+    .career-copy {
+      margin-left: 4px;
+      padding-left: 22px;
+    }
+    .people-skill dt {
+      font-size: 21px;
+    }
+  }
+  @media (max-width: 360px) {
+    .languages dl {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 18px;
+    }
+  }
+</style>

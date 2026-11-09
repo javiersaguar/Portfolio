@@ -1,0 +1,938 @@
+{
+  "Projects": [
+    "Proyectos",
+    "项目"
+  ],
+  "About": [
+    "Sobre mí",
+    "关于我"
+  ],
+  "About me": [
+    "Sobre mí",
+    "关于我"
+  ],
+  "Tech stack": [
+    "Tecnologías",
+    "技术栈"
+  ],
+  "Stack": [
+    "Tecnologías",
+    "技术栈"
+  ],
+  "Certifications": [
+    "Certificaciones",
+    "专业认证"
+  ],
+  "Contact": [
+    "Contacto",
+    "联系我"
+  ],
+  "Activity": [
+    "Actividad",
+    "动态"
+  ],
+  "Data": [
+    "Datos",
+    "数据"
+  ],
+  "Security": [
+    "Seguridad",
+    "安全"
+  ],
+  "Games & apps": [
+    "Juegos y aplicaciones",
+    "游戏与应用"
+  ],
+  "All": [
+    "Todos",
+    "全部"
+  ],
+  "Data Engineering": [
+    "Ingeniería de Datos",
+    "数据工程"
+  ],
+  "Cybersecurity": [
+    "Ciberseguridad",
+    "网络安全"
+  ],
+  "Data Engineering & Systems": [
+    "Ingeniería de Datos y Sistemas",
+    "数据与系统工程"
+  ],
+  "Big Data projects": [
+    "Proyectos de Big Data",
+    "大数据项目"
+  ],
+  "Cybersecurity audits": [
+    "Auditorías de ciberseguridad",
+    "网络安全审计"
+  ],
+  "Apps, tools and games, built end to end": [
+    "Aplicaciones, herramientas y juegos, de principio a fin",
+    "从零打造应用、工具和游戏"
+  ],
+  "Player 1 · Data Engineer": [
+    "Jugador 1 · Ingeniero de Datos",
+    "玩家 1 · 数据工程师"
+  ],
+  "See projects": [
+    "Ver proyectos",
+    "查看项目"
+  ],
+  "Email": [
+    "Correo",
+    "电子邮箱"
+  ],
+  "Data platforms, security tooling and a game. Built at hackathons, for class, and on weekends.": [
+    "Plataformas de datos, herramientas de seguridad y un juego. Creados en hackatones, en clase y los fines de semana.",
+    "数据平台、安全工具和游戏。在黑客松、课程项目和周末中构建。"
+  ],
+  "Filter projects": [
+    "Filtrar proyectos",
+    "筛选项目"
+  ],
+  "Live demo": [
+    "Demo",
+    "在线演示"
+  ],
+  "Code": [
+    "Código",
+    "源码"
+  ],
+  "Nothing here yet.": [
+    "Todavía no hay proyectos aquí.",
+    "这里暂时没有项目。"
+  ],
+  "Side quests": [
+    "Misiones secundarias",
+    "支线任务"
+  ],
+  "Small things I made for game nights. All of them are live.": [
+    "Pequeñas creaciones para noches de juegos. Todas están disponibles.",
+    "为朋友的游戏之夜制作的小应用，均可在线体验。"
+  ],
+  "Side quest": [
+    "Misión secundaria",
+    "支线任务"
+  ],
+  "Play": [
+    "Jugar",
+    "开始游戏"
+  ],
+  "Also built for class": [
+    "Otros proyectos de clase",
+    "其他课程项目"
+  ],
+  "Hackathon · team of 5": [
+    "Hackatón · equipo de 5",
+    "黑客松 · 5 人团队"
+  ],
+  "University project · team of 5": [
+    "Proyecto universitario · equipo de 5",
+    "大学项目 · 5 人团队"
+  ],
+  "Big Data in the Cloud · team of 2": [
+    "Big Data en la nube · equipo de 2",
+    "云端大数据 · 2 人团队"
+  ],
+  "Personal project": [
+    "Proyecto personal",
+    "个人项目"
+  ],
+  "Personal research project": [
+    "Investigación personal",
+    "个人研究项目"
+  ],
+  "Side project · in progress": [
+    "Proyecto personal · en desarrollo",
+    "业余项目 · 开发中"
+  ],
+  "Accounts payable on autopilot, with receipts.": [
+    "Cuentas a pagar automatizadas, con evidencias.",
+    "有据可查的自动化应付账款决策。"
+  ],
+  "HackSpain 2026, Maisa track. Each invoice gets PAY, DON'T PAY or ESCALATE. The LLM only extracts facts; versioned rules in code make the call and log the evidence, so every decision can be replayed.": [
+    "HackSpain 2026, reto Maisa. Cada factura recibe PAY, DON'T PAY o ESCALATE. El LLM solo extrae hechos; reglas versionadas en código deciden y registran las evidencias para poder reproducir cada decisión.",
+    "HackSpain 2026 的 Maisa 赛道。每张发票获得 PAY、DON'T PAY 或 ESCALATE 决策。大模型只提取事实，由版本化代码规则做出判断并记录证据，让每个决策都可复现。"
+  ],
+  "invoices decided, 0 pending": [
+    "facturas resueltas, 0 pendientes",
+    "张发票已决策，0 张待处理"
+  ],
+  "A privacy-first data platform for NYC taxis.": [
+    "Una plataforma de datos para taxis de Nueva York que prioriza la privacidad.",
+    "以隐私为核心的纽约出租车数据平台。"
+  ],
+  "Ingestion, processing, storage and dashboards over the 2020 yellow-cab trips. Individual trips never leave a restricted zone: everything you can query is an aggregate. Two chatbots sit on top, and you can drive them with hand gestures.": [
+    "Ingesta, procesamiento, almacenamiento y paneles sobre los viajes de taxis amarillos de 2020. Los viajes individuales permanecen en una zona restringida; solo se consultan agregados. Incluye dos chatbots controlables con gestos.",
+    "对 2020 年黄色出租车行程进行采集、处理、存储和可视化。单次行程始终保留在受限区域，外部只能查询聚合数据。平台还提供两个可通过手势操作的聊天机器人。"
+  ],
+  "taxi trips processed": [
+    "viajes procesados",
+    "次出租车行程已处理"
+  ],
+  "Big Data pipeline from lakehouse to live predictions.": [
+    "Pipeline de Big Data, del lakehouse a las predicciones en tiempo real.",
+    "从湖仓到实时预测的大数据流水线。"
+  ],
+  "Trains and serves flight delay predictions with Spark ML. Kafka streams the requests, Cassandra and an Iceberg lakehouse hold the data, Airflow and MLflow retrain. Runs on Docker Compose or GKE.": [
+    "Entrena y sirve predicciones de retrasos de vuelos con Spark ML. Kafka transmite peticiones; Cassandra e Iceberg almacenan los datos; Airflow y MLflow gestionan el reentrenamiento. Desplegable con Docker Compose o GKE.",
+    "使用 Spark ML 训练并提供航班延误预测。Kafka 传输请求，Cassandra 与 Iceberg 湖仓存储数据，Airflow 和 MLflow 管理重训练。可运行于 Docker Compose 或 GKE。"
+  ],
+  "Spark in cluster mode": [
+    "Spark en modo clúster",
+    "Spark 集群模式"
+  ],
+  "A modular defensive security toolkit.": [
+    "Una caja de herramientas modular de seguridad defensiva.",
+    "模块化防御安全工具集。"
+  ],
+  "HTTP header audits, TLS checks, leaked secret scanning and an SSH honeypot behind one CLI. Every module follows the same contract, so adding a new scan is adding one file.": [
+    "Auditorías de cabeceras HTTP, comprobaciones TLS, búsqueda de secretos filtrados y un honeypot SSH en una sola CLI. Todos los módulos siguen un contrato común; un nuevo análisis se añade con un archivo.",
+    "在统一命令行中提供 HTTP 标头审计、TLS 检查、泄露密钥扫描和 SSH 蜜罐。各模块遵循相同接口，新增扫描只需添加一个文件。"
+  ],
+  "modules, one contract": [
+    "módulos, un contrato",
+    "个模块，共用一个接口"
+  ],
+  "Where do people drive worse? It depends on the measure.": [
+    "¿Dónde se conduce peor? Depende de cómo lo midas.",
+    "哪里驾驶更危险？答案取决于衡量方式。"
+  ],
+  "A reproducible road-safety study on official DGT, INE and Eurostat data. It shows how province rankings move when you change the outcome or the denominator, with a public observatory on top.": [
+    "Estudio reproducible de seguridad vial con datos oficiales de DGT, INE y Eurostat. Muestra cómo cambia la clasificación provincial al variar el indicador o su denominador, con un observatorio público.",
+    "基于 DGT、INE 和 Eurostat 官方数据的可复现道路安全研究。展示改变指标或分母后各省排名如何变化，并提供公开观测平台。"
+  ],
+  "injury crashes analysed": [
+    "accidentes con víctimas analizados",
+    "起伤亡事故已分析"
+  ],
+  "A non-profit fangame built from the ground up.": [
+    "Un fangame sin ánimo de lucro creado desde cero.",
+    "从零开发的非营利粉丝游戏。"
+  ],
+  "A Pokémon fangame in the spirit of Indigo, written in Godot 4 with GDScript: overworld, battles, double battles, breeding and a RandomLocke mode.": [
+    "Fangame de Pokémon inspirado en Indigo, desarrollado con Godot 4 y GDScript: exploración, combates, combates dobles, crianza y modo RandomLocke.",
+    "使用 Godot 4 和 GDScript 开发、受 Indigo 启发的宝可梦粉丝游戏，包含地图探索、战斗、双打、培育和 RandomLocke 模式。"
+  ],
+  "automated tests": [
+    "pruebas automatizadas",
+    "项自动化测试"
+  ],
+  "A Texas Hold'em chip counter for when nobody brought chips.": [
+    "Un contador de fichas de Texas Hold'em para cuando nadie trae fichas.",
+    "没有实体筹码时使用的德州扑克筹码计数器。"
+  ],
+  "The party guessing game, on one phone.": [
+    "El juego de adivinanzas para fiestas, en un solo móvil.",
+    "只需一部手机即可玩的聚会猜谜游戏。"
+  ],
+  "Cards for game nights.": [
+    "Cartas para noches de juegos.",
+    "游戏之夜的卡牌应用。"
+  ],
+  "A betting house for friends. Points only, never real money.": [
+    "Una casa de apuestas para amigos. Solo puntos, nunca dinero real.",
+    "朋友之间的竞猜应用。仅使用积分，不涉及真实金钱。"
+  ],
+  "Object detection (YOLO) and LiDAR-to-camera projection.": [
+    "Detección de objetos con YOLO y proyección de LiDAR a cámara.",
+    "YOLO 目标检测和激光雷达到相机的投影。"
+  ],
+  "Self-supervised brain tumour detection with contrastive learning.": [
+    "Detección autosupervisada de tumores cerebrales con aprendizaje contrastivo.",
+    "利用对比学习进行自监督脑肿瘤检测。"
+  ],
+  "Hand gestures": [
+    "Gestos de manos",
+    "手势识别"
+  ],
+  "Gesture recognition with MediaPipe and a CNN.": [
+    "Reconocimiento de gestos con MediaPipe y una CNN.",
+    "使用 MediaPipe 和卷积神经网络进行手势识别。"
+  ],
+  "Professional Certificate": [
+    "Certificado profesional",
+    "专业证书"
+  ],
+  "I'm Javier, a final-year **Data Engineering & Systems** student at **ETSIT UPM** in Madrid. Most of what I build sits where data meets infrastructure: pipelines that stream, store and serve data, and the platforms around them.": [
+    "Soy Javier, estudiante de último curso de **Ingeniería de Datos y Sistemas** en **ETSIT UPM**, Madrid. Trabajo donde los datos se encuentran con la infraestructura: pipelines de streaming, almacenamiento y servicios, y las plataformas que los rodean.",
+    "我是 Javier，就读于马德里 **ETSIT UPM** 的**数据与系统工程**专业最后一年。我主要构建连接数据与基础设施的系统：数据流、存储、服务流水线，以及支撑它们的平台。"
+  ],
+  "I also care about security. I co-founded **FORTIA Security**, a cybersecurity consultancy for small businesses (web security audits, phishing simulations and staff training), and I write my own defensive tools.": [
+    "También me interesa la seguridad. Cofundé **FORTIA Security**, una consultora de ciberseguridad para pequeñas empresas (auditorías web, simulaciones de phishing y formación), y desarrollo mis propias herramientas defensivas.",
+    "我也专注于安全领域。我联合创办了面向小企业的网络安全咨询公司 **FORTIA Security**，提供网站安全审计、钓鱼模拟和员工培训，也开发自己的防御工具。"
+  ],
+  "And sometimes I build just for fun: party games for my friends, a poker chip counter for nights without chips, and a whole Pokémon fangame.": [
+    "Y a veces creo por diversión: juegos para mis amigos, un contador de fichas de póquer y todo un fangame de Pokémon.",
+    "有时我也纯粹为了乐趣而开发：朋友聚会游戏、扑克筹码计数器，以及一整款宝可梦粉丝游戏。"
+  ],
+  "My bachelor's thesis: a cyber situational awareness platform that turns raw security telemetry into correlated, explainable incidents. Redpanda, Sigma rules, multi-stage detection, Neo4j attack graphs and MITRE ATT&CK.": [
+    "Mi TFG: una plataforma de conciencia cibersituacional que transforma telemetría de seguridad en incidentes correlacionados y explicables. Redpanda, reglas Sigma, detección multietapa, grafos de ataque en Neo4j y MITRE ATT&CK.",
+    "我的本科毕业项目：网络态势感知平台，将原始安全遥测转化为关联且可解释的事件。技术包括 Redpanda、Sigma 规则、多阶段检测、Neo4j 攻击图和 MITRE ATT&CK。"
+  ],
+  "Right now": [
+    "Ahora mismo",
+    "目前在做"
+  ],
+  "Skip ▸▸": [
+    "Saltar ▸▸",
+    "跳过 ▸▸"
+  ],
+  "Character sheet": [
+    "Ficha de personaje",
+    "角色档案"
+  ],
+  "Player 1": [
+    "Jugador 1",
+    "玩家 1"
+  ],
+  "Lvl 4": [
+    "Niv. 4",
+    "等级 4"
+  ],
+  "Class: Data Engineer": [
+    "Clase: Ingeniero de Datos",
+    "职业：数据工程师"
+  ],
+  "Backend": [
+    "Backend",
+    "后端"
+  ],
+  "Frontend": [
+    "Frontend",
+    "前端"
+  ],
+  "Loot": [
+    "Botín",
+    "战利品"
+  ],
+  "Special move": [
+    "Habilidad especial",
+    "特殊技能"
+  ],
+  "Give me a dataset and a weekend and I'll ship a pipeline around it.": [
+    "Dame un dataset y un fin de semana y construiré un pipeline con él.",
+    "给我一个数据集和一个周末，我就能围绕它搭建一条流水线。"
+  ],
+  "540 invoices": [
+    "540 facturas",
+    "540 张发票"
+  ],
+  "24.6M trips": [
+    "24,6 M de viajes",
+    "2460 万次行程"
+  ],
+  "on GKE": [
+    "en GKE",
+    "部署于 GKE"
+  ],
+  "4 modules": [
+    "4 módulos",
+    "4 个模块"
+  ],
+  "301K crashes": [
+    "301 mil accidentes",
+    "30.1 万起事故"
+  ],
+  "452 tests": [
+    "452 pruebas",
+    "452 项测试"
+  ],
+  "An inventory, not a badge wall. Hover an item or move with the arrow keys to see where I used it.": [
+    "Un inventario con contexto. Apunta a una tecnología o usa las flechas para ver dónde la he utilizado.",
+    "不只是技术徽标。悬停或使用方向键，查看我在何处使用过每项技术。"
+  ],
+  "Inventory": [
+    "Inventario",
+    "装备清单"
+  ],
+  "items": [
+    "elementos",
+    "项"
+  ],
+  "Cloud": [
+    "Nube",
+    "云计算"
+  ],
+  "AI": [
+    "IA",
+    "人工智能"
+  ],
+  "Ops": [
+    "Operaciones",
+    "运维"
+  ],
+  "A year in blocks": [
+    "Un año en bloques",
+    "一年的代码方块"
+  ],
+  "Every day I commit is a block. The greener, the more I shipped. Press play and eat them.": [
+    "Cada día con commits es un bloque. Cuanto más verde, más actividad. Pulsa jugar y cómetelos.",
+    "每个提交代码的日子都是一个方块。颜色越绿，贡献越多。点击开始，把它们吃掉。"
+  ],
+  "Contributions": [
+    "Contribuciones",
+    "贡献次数"
+  ],
+  "Active days": [
+    "Días activos",
+    "活跃天数"
+  ],
+  "Best day": [
+    "Mejor día",
+    "最活跃的一天"
+  ],
+  "Play snake": [
+    "Jugar a Snake",
+    "开始贪吃蛇"
+  ],
+  "Arrows or WASD · swipe on touch · Esc to quit": [
+    "Flechas o WASD · desliza en móvil · Esc para salir",
+    "方向键或 WASD · 触屏滑动 · Esc 退出"
+  ],
+  "Less": [
+    "Menos",
+    "少"
+  ],
+  "More": [
+    "Más",
+    "多"
+  ],
+  "The calendar could not load right now. See it on": [
+    "No se ha podido cargar el calendario. Puedes verlo en",
+    "暂时无法加载日历，请前往"
+  ],
+  "Play again": [
+    "Volver a jugar",
+    "再玩一次"
+  ],
+  "Quit": [
+    "Salir",
+    "退出"
+  ],
+  "Game over": [
+    "Fin de la partida",
+    "游戏结束"
+  ],
+  "You ate the whole year": [
+    "Te has comido todo el año",
+    "你吃完了整年的贡献"
+  ],
+  "0 blocks · go!": [
+    "0 bloques · ¡vamos!",
+    "0 个方块 · 开始！"
+  ],
+  "block": [
+    "bloque",
+    "个方块"
+  ],
+  "blocks": [
+    "bloques",
+    "个方块"
+  ],
+  "contribution": [
+    "contribución",
+    "次贡献"
+  ],
+  "contributions": [
+    "contribuciones",
+    "次贡献"
+  ],
+  "eaten": [
+    "comidos",
+    "已吃掉"
+  ],
+  "Looking for internships and junior roles in data engineering. Say hi.": [
+    "Busco prácticas y puestos junior en ingeniería de datos. Hablemos.",
+    "正在寻找数据工程实习和初级岗位，欢迎联系。"
+  ],
+  "Copy email address": [
+    "Copiar correo",
+    "复制邮箱地址"
+  ],
+  "hi. this is javier's terminal.": [
+    "hola. este es el terminal de javier.",
+    "你好，这里是 Javier 的终端。"
+  ],
+  "type a command and press enter, or use the buttons below.": [
+    "escribe un comando y pulsa intro, o usa los botones de abajo.",
+    "输入命令并按回车，或使用下方按钮。"
+  ],
+  "type a command": [
+    "escribe un comando",
+    "输入命令"
+  ],
+  "Terminal command": [
+    "Comando de terminal",
+    "终端命令"
+  ],
+  "Built block by block in Madrid. ©": [
+    "Ensamblado bloque a bloque en Madrid. ©",
+    "在马德里逐块构建。©"
+  ],
+  "Game Boy mode": [
+    "Modo Game Boy",
+    "Game Boy 模式"
+  ],
+  "Back to top": [
+    "Volver arriba",
+    "返回顶部"
+  ],
+  "Copied": [
+    "Copiado",
+    "已复制"
+  ],
+  "Palette": [
+    "Paleta",
+    "配色"
+  ],
+  "Game Boy mode on": [
+    "Modo Game Boy activado",
+    "已开启 Game Boy 模式"
+  ],
+  "Game Boy mode off": [
+    "Modo Game Boy desactivado",
+    "已关闭 Game Boy 模式"
+  ],
+  "Achievement unlocked": [
+    "Logro desbloqueado",
+    "成就已解锁"
+  ],
+  "Picky player": [
+    "Jugador selectivo",
+    "挑剔的玩家"
+  ],
+  "Filter the projects.": [
+    "Filtra los proyectos.",
+    "筛选项目。"
+  ],
+  "Inventory check": [
+    "Revisión del inventario",
+    "检查装备"
+  ],
+  "Inspect an item in the tech stack.": [
+    "Inspecciona una tecnología del inventario.",
+    "查看技术栈中的一项技术。"
+  ],
+  "Root access": [
+    "Acceso root",
+    "Root 权限"
+  ],
+  "Run a command in the terminal.": [
+    "Ejecuta un comando en el terminal.",
+    "在终端运行命令。"
+  ],
+  "Snake charmer": [
+    "Encantador de serpientes",
+    "驯蛇高手"
+  ],
+  "Eat 10 blocks in the snake game.": [
+    "Come 10 bloques en Snake.",
+    "在贪吃蛇游戏中吃掉 10 个方块。"
+  ],
+  "Lights switch": [
+    "Cambio de luces",
+    "灯光开关"
+  ],
+  "Switch between the light and dark theme.": [
+    "Alterna entre el tema claro y oscuro.",
+    "切换浅色与深色主题。"
+  ],
+  "Explorer": [
+    "Explorador",
+    "探索者"
+  ],
+  "Reach the end of the page.": [
+    "Llega al final de la página.",
+    "到达页面底部。"
+  ],
+  "Cheat code": [
+    "Código secreto",
+    "隐藏秘籍"
+  ],
+  "Up, up, down, down, left, right, left, right, B, A.": [
+    "Arriba, arriba, abajo, abajo, izquierda, derecha, izquierda, derecha, B, A.",
+    "上、上、下、下、左、右、左、右、B、A。"
+  ],
+  "available commands:": [
+    "comandos disponibles:",
+    "可用命令："
+  ],
+  "whoami who is this": [
+    "whoami        quién soy",
+    "whoami        关于我"
+  ],
+  "projects what I have built": [
+    "projects      qué he creado",
+    "projects      我的项目"
+  ],
+  "quests small things for game nights": [
+    "quests        creaciones para noches de juegos",
+    "quests        聚会小游戏"
+  ],
+  "stack the tools I use": [
+    "stack         herramientas que utilizo",
+    "stack         技术栈"
+  ],
+  "certs certifications": [
+    "certs         certificaciones",
+    "certs         专业认证"
+  ],
+  "contact where to find me": [
+    "contact       dónde encontrarme",
+    "contact       联系方式"
+  ],
+  "email copy my email address": [
+    "email         copiar mi correo",
+    "email         复制邮箱"
+  ],
+  "achievements what you have unlocked here": [
+    "achievements  logros desbloqueados",
+    "achievements  已解锁成就"
+  ],
+  "snake play snake on my contribution calendar": [
+    "snake         jugar en mi calendario de contribuciones",
+    "snake         在贡献日历上玩贪吃蛇"
+  ],
+  "theme switch light and dark": [
+    "theme         alternar claro y oscuro",
+    "theme         切换深浅主题"
+  ],
+  "gameboy switch the palette": [
+    "gameboy       cambiar la paleta",
+    "gameboy       切换配色"
+  ],
+  "github open my GitHub": [
+    "github        abrir mi GitHub",
+    "github        打开 GitHub"
+  ],
+  "linkedin open my LinkedIn": [
+    "linkedin      abrir mi LinkedIn",
+    "linkedin      打开 LinkedIn"
+  ],
+  "clear clean the screen": [
+    "clear         limpiar la pantalla",
+    "clear         清空屏幕"
+  ],
+  "scroll up to #projects for the details.": [
+    "sube a #projects para ver los detalles.",
+    "前往 #projects 查看详情。"
+  ],
+  "loading snake...": [
+    "cargando snake...",
+    "正在加载贪吃蛇……"
+  ],
+  "game boy mode on.": [
+    "modo Game Boy activado.",
+    "已开启 Game Boy 模式。"
+  ],
+  "game boy mode off.": [
+    "modo Game Boy desactivado.",
+    "已关闭 Game Boy 模式。"
+  ],
+  "opening github...": [
+    "abriendo GitHub...",
+    "正在打开 GitHub……"
+  ],
+  "opening linkedin...": [
+    "abriendo LinkedIn...",
+    "正在打开 LinkedIn……"
+  ],
+  "nice try. this incident will be reported.": [
+    "buen intento. este incidente será notificado.",
+    "不错的尝试。本次事件将被记录。"
+  ],
+  "final-year data engineering student. big data projects, cybersecurity audits, apps, tools and games.": [
+    "estudiante de último curso de ingeniería de datos. proyectos de Big Data, auditorías de ciberseguridad, aplicaciones, herramientas y juegos.",
+    "数据工程专业最后一年的学生。大数据项目、网络安全审计、应用、工具与游戏。"
+  ],
+  "Copied to the clipboard.": [
+    "Copiado al portapapeles.",
+    "已复制到剪贴板。"
+  ],
+  "unlocked.": [
+    "desbloqueados.",
+    "已解锁。"
+  ],
+  "command not found:": [
+    "comando no encontrado:",
+    "未找到命令："
+  ],
+  "try \"help\".": [
+    "prueba \"help\".",
+    "请尝试 \"help\"。"
+  ],
+  "light theme on.": [
+    "tema claro activado.",
+    "已开启浅色主题。"
+  ],
+  "dark theme on.": [
+    "tema oscuro activado.",
+    "已开启深色主题。"
+  ],
+  "Cyber situational awareness": [
+    "Conciencia cibersituacional",
+    "网络态势感知"
+  ],
+  "From raw security telemetry to explainable incidents.": [
+    "De la telemetría de seguridad a incidentes explicables.",
+    "从原始安全遥测到可解释的事件。"
+  ],
+  "My bachelor's thesis, in progress: canonical OCSF events, Sigma detections and multi-stage correlation, with Neo4j attack graphs and explainable prioritisation. Built on Redpanda, Apache Flink and ClickHouse.": [
+    "Mi TFG, en desarrollo: eventos canónicos OCSF, detecciones Sigma y correlación multietapa, con grafos de ataque en Neo4j y priorización explicable. Basado en Redpanda, Apache Flink y ClickHouse.",
+    "正在开发的本科毕业项目：OCSF 标准事件、Sigma 检测与多阶段关联，结合 Neo4j 攻击图和可解释优先级排序。基于 Redpanda、Apache Flink 和 ClickHouse。"
+  ],
+  "Bachelor's thesis · in progress": [
+    "TFG · en desarrollo",
+    "本科毕业项目 · 开发中"
+  ],
+  "multi-stage detection": [
+    "detección multietapa",
+    "多阶段检测"
+  ],
+  "giving a talk": [
+    "dando una charla",
+    "进行技术分享"
+  ],
+  "max level": [
+    "nivel máximo",
+    "最高等级"
+  ],
+  "out of 10": [
+    "de 10",
+    "分（满分 10 分）"
+  ],
+  "contributions in the last year": [
+    "contribuciones en el último año",
+    "次贡献（过去一年）"
+  ],
+  "on": [
+    "el",
+    "于"
+  ],
+  "Spark: HappyTaxi and Flight Delays, written in Scala, in cluster mode.": [
+    "Spark: HappyTaxi y Flight Delays, escritos en Scala y en modo clúster.",
+    "Spark：HappyTaxi 与 Flight Delays，使用 Scala 编写并运行于集群模式。"
+  ],
+  "HappyTaxi and Flight Delays, written in Scala, in cluster mode.": [
+    "HappyTaxi y Flight Delays, escritos en Scala y en modo clúster.",
+    "HappyTaxi 与 Flight Delays，使用 Scala 编写并运行于集群模式。"
+  ],
+  "Streaming and multi-stage detection (CEP) in my thesis.": [
+    "Streaming y detección multietapa (CEP) en mi TFG.",
+    "毕业项目中的流处理与多阶段检测（CEP）。"
+  ],
+  "Flight Delays streams its prediction requests through Kafka.": [
+    "Flight Delays transmite las peticiones de predicción mediante Kafka.",
+    "Flight Delays 通过 Kafka 传输预测请求。"
+  ],
+  "The event bus of HappyTaxi and of my thesis.": [
+    "El bus de eventos de HappyTaxi y de mi TFG.",
+    "HappyTaxi 和毕业项目的事件总线。"
+  ],
+  "The analytical store of my thesis: events, alerts and campaigns.": [
+    "El almacén analítico de mi TFG: eventos, alertas y campañas.",
+    "毕业项目的分析存储，保存事件、告警与攻击活动。"
+  ],
+  "Orchestrates loads and retraining in HappyTaxi and Flight Delays.": [
+    "Orquesta cargas y reentrenamientos en HappyTaxi y Flight Delays.",
+    "编排 HappyTaxi 和 Flight Delays 的数据加载与重训练。"
+  ],
+  "Managed Spark: notebooks, jobs and Delta tables.": [
+    "Spark gestionado: notebooks, trabajos y tablas Delta.",
+    "托管 Spark：笔记本、作业和 Delta 表。"
+  ],
+  "The lakehouse tables of Flight Delays.": [
+    "Las tablas del lakehouse de Flight Delays.",
+    "Flight Delays 的湖仓数据表。"
+  ],
+  "The attack graph of my thesis: feasible paths to the critical assets.": [
+    "El grafo de ataque de mi TFG: rutas viables hacia activos críticos.",
+    "毕业项目的攻击图，展示通向关键资产的可行路径。"
+  ],
+  "Aggregates in HappyTaxi, predictions in Flight Delays.": [
+    "Agregados en HappyTaxi y predicciones en Flight Delays.",
+    "HappyTaxi 的聚合数据和 Flight Delays 的预测数据。"
+  ],
+  "Distances and predictions in Flight Delays.": [
+    "Distancias y predicciones en Flight Delays.",
+    "Flight Delays 中的距离与预测数据。"
+  ],
+  "Traffic analysis in labs and audits.": [
+    "Análisis de tráfico en laboratorios y auditorías.",
+    "实验与审计中的流量分析。"
+  ],
+  "Open SIEM, planned as the outside baseline for the rules of my thesis.": [
+    "SIEM abierto, previsto como referencia externa para las reglas de mi TFG.",
+    "开源 SIEM，计划用作毕业项目检测规则的外部基准。"
+  ],
+  "Network IDS alerts are one of the telemetry sources of my thesis.": [
+    "Las alertas del IDS de red son una fuente de telemetría de mi TFG.",
+    "网络入侵检测告警是毕业项目的遥测来源之一。"
+  ],
+  "The checklist behind web audits and the Atalaya header checks.": [
+    "La referencia para auditorías web y comprobaciones de cabeceras de Atalaya.",
+    "网站审计和 Atalaya 标头检查所依据的清单。"
+  ],
+  "Web application audits.": [
+    "Auditorías de aplicaciones web.",
+    "Web 应用安全审计。"
+  ],
+  "Network discovery and port scanning in labs and audits.": [
+    "Descubrimiento de redes y escaneo de puertos en laboratorios y auditorías.",
+    "实验与审计中的网络发现和端口扫描。"
+  ],
+  "Secrets management: keys and credentials out of the code.": [
+    "Gestión de secretos: claves y credenciales fuera del código.",
+    "密钥管理：将密钥和凭据保留在代码之外。"
+  ],
+  "Every detection and incident in my thesis maps to ATT&CK techniques.": [
+    "Cada detección e incidente de mi TFG se relaciona con técnicas de ATT&CK.",
+    "毕业项目中的每项检测和事件均映射到 ATT&CK 技术。"
+  ],
+  "GKE, Compute Engine and Artifact Registry for Flight Delays.": [
+    "GKE, Compute Engine y Artifact Registry en Flight Delays.",
+    "Flight Delays 中使用 GKE、Compute Engine 和 Artifact Registry。"
+  ],
+  "Compute, storage and IAM on Amazon Web Services.": [
+    "Cómputo, almacenamiento e IAM en Amazon Web Services.",
+    "Amazon Web Services 上的计算、存储和身份访问管理。"
+  ],
+  "Microsoft cloud services and Entra ID.": [
+    "Servicios cloud de Microsoft y Entra ID.",
+    "Microsoft 云服务与 Entra ID。"
+  ],
+  "Infrastructure as code.": [
+    "Infraestructura como código.",
+    "基础设施即代码。"
+  ],
+  "Serverless SQL warehouse on Google Cloud.": [
+    "Almacén SQL sin servidor en Google Cloud.",
+    "Google Cloud 上的无服务器 SQL 数据仓库。"
+  ],
+  "The S3 API: SeaweedFS in HappyTaxi, MinIO in Flight Delays.": [
+    "API S3: SeaweedFS en HappyTaxi y MinIO en Flight Delays.",
+    "S3 API：HappyTaxi 使用 SeaweedFS，Flight Delays 使用 MinIO。"
+  ],
+  "Workers AI is one of the vision models benchmarked in TrazIA-3D.": [
+    "Workers AI es uno de los modelos de visión evaluados en TrazIA-3D.",
+    "Workers AI 是 TrazIA-3D 中进行基准评测的视觉模型之一。"
+  ],
+  "Object storage for Flight Delays and my thesis.": [
+    "Almacenamiento de objetos en Flight Delays y mi TFG.",
+    "Flight Delays 和毕业项目的对象存储。"
+  ],
+  "The hand-gesture CNN of HappyTaxi and RoboMaster detection for class.": [
+    "La CNN de gestos de HappyTaxi y detección de RoboMaster para clase.",
+    "HappyTaxi 的手势卷积神经网络和 RoboMaster 课程检测项目。"
+  ],
+  "The models of European Bad Drivers.": [
+    "Los modelos de European Bad Drivers.",
+    "European Bad Drivers 中的模型。"
+  ],
+  "The crash severity model of European Bad Drivers.": [
+    "El modelo de gravedad de accidentes de European Bad Drivers.",
+    "European Bad Drivers 的事故严重程度模型。"
+  ],
+  "Pretrained vision models, fine-tuned in TrazIA-3D.": [
+    "Modelos de visión preentrenados, ajustados en TrazIA-3D.",
+    "在 TrazIA-3D 中微调的预训练视觉模型。"
+  ],
+  "Tracks every retraining of Flight Delays.": [
+    "Registra cada reentrenamiento de Flight Delays.",
+    "跟踪 Flight Delays 的每次重训练。"
+  ],
+  "The RAG chatbot of HappyTaxi.": [
+    "El chatbot RAG de HappyTaxi.",
+    "HappyTaxi 的 RAG 聊天机器人。"
+  ],
+  "Stateful agent workflows on top of LangChain.": [
+    "Flujos de agentes con estado sobre LangChain.",
+    "基于 LangChain 的有状态智能体工作流。"
+  ],
+  "Local models for the HappyTaxi chatbots and TrazIA-3D.": [
+    "Modelos locales para los chatbots de HappyTaxi y TrazIA-3D.",
+    "HappyTaxi 聊天机器人和 TrazIA-3D 使用的本地模型。"
+  ],
+  "The HappyTaxi chatbot answers from retrieved documents.": [
+    "El chatbot de HappyTaxi responde a partir de documentos recuperados.",
+    "HappyTaxi 聊天机器人基于检索文档回答问题。"
+  ],
+  "The vector store behind the HappyTaxi RAG chatbot.": [
+    "La base vectorial del chatbot RAG de HappyTaxi.",
+    "HappyTaxi RAG 聊天机器人背后的向量数据库。"
+  ],
+  "HappyTaxi, Flight Delays, Albertitos and my thesis all run on Docker.": [
+    "HappyTaxi, Flight Delays, Albertitos y mi TFG se ejecutan en Docker.",
+    "HappyTaxi、Flight Delays、Albertitos 和毕业项目均运行于 Docker。"
+  ],
+  "Flight Delays on Google Kubernetes Engine.": [
+    "Flight Delays en Google Kubernetes Engine.",
+    "Flight Delays 运行于 Google Kubernetes Engine。"
+  ],
+  "Every project, with Actions for CI in Atalaya and European Bad Drivers.": [
+    "Todos los proyectos; Actions para CI en Atalaya y European Bad Drivers.",
+    "所有项目使用 GitHub，Atalaya 和 European Bad Drivers 使用 Actions 持续集成。"
+  ],
+  "Metrics for HappyTaxi, Flight Delays and my thesis.": [
+    "Métricas de HappyTaxi, Flight Delays y mi TFG.",
+    "HappyTaxi、Flight Delays 和毕业项目的指标。"
+  ],
+  "Dashboards for HappyTaxi, Flight Delays and my thesis.": [
+    "Paneles de HappyTaxi, Flight Delays y mi TFG.",
+    "HappyTaxi、Flight Delays 和毕业项目的仪表盘。"
+  ],
+  "Packaging Kubernetes deployments as charts.": [
+    "Empaquetado de despliegues de Kubernetes como charts.",
+    "以 chart 打包 Kubernetes 部署。"
+  ],
+  "Traces, metrics and logs with one open standard.": [
+    "Trazas, métricas y logs con un estándar abierto.",
+    "使用统一开放标准处理链路、指标和日志。"
+  ],
+  "Where everything runs, WSL included.": [
+    "Donde se ejecuta todo, WSL incluido.",
+    "所有系统的运行环境，也包括 WSL。"
+  ],
+  "Albertitos, Atalaya, European Bad Drivers, TrazIA-3D and the HappyTaxi APIs.": [
+    "Albertitos, Atalaya, European Bad Drivers, TrazIA-3D y las API de HappyTaxi.",
+    "Albertitos、Atalaya、European Bad Drivers、TrazIA-3D 和 HappyTaxi API。"
+  ],
+  "ClickHouse in my thesis, DuckDB in European Bad Drivers, SQLite in Albertitos.": [
+    "ClickHouse en mi TFG, DuckDB en European Bad Drivers y SQLite en Albertitos.",
+    "毕业项目使用 ClickHouse，European Bad Drivers 使用 DuckDB，Albertitos 使用 SQLite。"
+  ],
+  "The portal of my thesis, Bet366, the Albertitos console and this site.": [
+    "El portal de mi TFG, Bet366, la consola de Albertitos y esta web.",
+    "毕业项目门户、Bet366、Albertitos 控制台和本网站。"
+  ],
+  "The capture and access APIs of HappyTaxi.": [
+    "Las API de captura y acceso de HappyTaxi.",
+    "HappyTaxi 的采集与访问 API。"
+  ],
+  "The European Bad Drivers observatory and the Albertitos console.": [
+    "El observatorio de European Bad Drivers y la consola de Albertitos.",
+    "European Bad Drivers 观测平台和 Albertitos 控制台。"
+  ],
+  "Glue for every pipeline and deploy.": [
+    "Automatización para cada pipeline y despliegue.",
+    "连接各个流水线和部署步骤的脚本。"
+  ],
+  "Pokémon Spain, in GDScript.": [
+    "Pokémon Spain, con GDScript.",
+    "使用 GDScript 开发 Pokémon Spain。"
+  ],
+  "The Spark jobs of HappyTaxi and Flight Delays.": [
+    "Los trabajos Spark de HappyTaxi y Flight Delays.",
+    "HappyTaxi 和 Flight Delays 的 Spark 作业。"
+  ],
+  "The typed contracts of Albertitos, Atalaya and TrazIA-3D.": [
+    "Los contratos tipados de Albertitos, Atalaya y TrazIA-3D.",
+    "Albertitos、Atalaya 和 TrazIA-3D 的类型化数据契约。"
+  ],
+  "Final-year Data Engineering student at ETSIT UPM. Big Data projects, cybersecurity audits, and apps, tools and games built end to end.": [
+    "Estudiante de último curso de Ingeniería de Datos en ETSIT UPM. Proyectos de Big Data, auditorías de ciberseguridad y aplicaciones, herramientas y juegos creados de principio a fin.",
+    "就读于 ETSIT UPM 的数据工程专业最后一年学生。专注于大数据项目、网络安全审计，以及从零打造的应用、工具和游戏。"
+  ]
+}

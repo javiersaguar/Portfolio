@@ -1,0 +1,68 @@
+---
+import Controls from './Controls.astro';
+import Intro from './Intro.astro';
+import '../styles/arcade.css';
+import ArcadeSprite from './ArcadeSprite.astro';
+import { arcadeAliens, arcadeCannonBase, arcadeCannonBarrel } from '../data/arcade-sprites';
+import { arcadeCopy, pageLocale } from '../data/arcade-copy';
+const copy = arcadeCopy(pageLocale(Astro.url));
+---
+
+<section id="arcade" class="arcade" aria-labelledby="arcade-title" data-arcade data-copy={JSON.stringify(copy)}>
+  <header class="arcade-header">
+    <a class="arcade-brand pixel" href="#arcade" aria-label={copy.home}><span class="brand-mark">JS</span><span>Javier Saguar</span></a>
+    <Controls />
+  </header>
+
+  <div class="arcade-heading">
+    <p class="pilot mono">JAVIER SAGUAR <span aria-hidden="true">/</span> {copy.role}</p>
+    <h1 id="arcade-title" class="pixel" tabindex="-1">{copy.title}</h1>
+    <p class="arcade-subtitle">{copy.subtitle}</p>
+  </div>
+
+  <div class="arcade-stage" data-stage>
+    <div class="constellation" aria-label={copy.menu}>
+      {copy.destinations.map((destination, index) => (
+        <a class:list={['invader', `invader-${index}`, { featured: destination.id === 'projects' }]} href={`#${destination.id}`} data-target={destination.id} data-index={index} aria-label={`${destination.label}: ${destination.detail}`} aria-describedby="aim-instructions" style={`--sprite-delay:-${index * .19}s`}>
+          <span class="target-corners" aria-hidden="true"></span>
+          <span class="alien"><ArcadeSprite frames={arcadeAliens[index]} /></span>
+          <span class="target-name pixel">{destination.id === 'certifications' && destination.label.startsWith('Certifi') ? <>Certifi<wbr />{destination.label.slice(7)}</> : destination.label}</span>
+          <span class="target-key mono" aria-hidden="true">{index + 1}</span>
+        </a>
+      ))}
+    </div>
+    <div class="target-readout" aria-hidden="true">
+      <span class="readout-kicker mono" data-readout-kicker>{copy.ready}</span>
+      <span class="readout-name pixel" data-readout-name></span>
+      <span class="readout-detail" data-readout-detail></span>
+    </div>
+    <div class="horizon" aria-hidden="true"><span></span></div>
+    <div class="cannon" data-cannon aria-hidden="true">
+      <div class="cannon-fallback">
+        <span class="cannon-shadow"></span>
+        <div class="cannon-turret" data-turret>
+          <div class="cannon-recoil" data-recoil><ArcadeSprite frames={[arcadeCannonBarrel]} /><span class="muzzle" data-muzzle></span></div>
+        </div>
+        <div class="cannon-base"><ArcadeSprite frames={[arcadeCannonBase]} /></div>
+        <span class="cannon-pivot" data-pivot></span>
+      </div>
+    </div>
+    <div class="crosshair" data-crosshair aria-hidden="true"><span></span></div>
+    <div class="effects" data-effects aria-hidden="true"></div>
+  </div>
+
+  <footer class="arcade-footer">
+    <div class="aim-help" id="aim-instructions"><span class="mouse-help">{copy.aim}</span><span class="touch-help">{copy.touch}</span><span class="keyboard-help mono">{copy.keyboard}</span></div>
+    <div class="arcade-actions">
+      <a class="direct-link" href="#top" data-direct>{copy.direct}<span aria-hidden="true"> ↗</span></a>
+      <button class="sound-toggle mono" type="button" data-sound aria-pressed="false" aria-label={copy.soundLabel}>{copy.soundOff}</button>
+    </div>
+  </footer>
+</section>
+
+<Intro />
+
+
+<script>
+  import '../scripts/arcade';
+</script>

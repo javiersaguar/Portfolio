@@ -142,6 +142,53 @@ img {
   letter-spacing: 0.02em;
 }
 
+/* La escena y el contenido comparten tema, pero solo una vista es visible. */
+:root[data-view='arcade'] .portfolio-view,
+:root[data-view='portfolio'] [data-arcade] {
+  display: none;
+}
+
+/* Cada destino del arcade abre una sola vista, sin el resto del portfolio debajo. */
+:root[data-view='portfolio'][data-section] #portfolio-content > section {
+  display: none;
+}
+:root[data-view='portfolio'][data-section='top'] #portfolio-content > #top {
+  display: flex;
+}
+:root[data-view='portfolio'][data-section='projects'] #portfolio-content > #projects,
+:root[data-view='portfolio'][data-section='about'] #portfolio-content > #about,
+:root[data-view='portfolio'][data-section='education'] #portfolio-content > #education,
+:root[data-view='portfolio'][data-section='experience'] #portfolio-content > #experience,
+:root[data-view='portfolio'][data-section='skills'] #portfolio-content > #skills,
+:root[data-view='portfolio'][data-section='stack'] #portfolio-content > #stack,
+:root[data-view='portfolio'][data-section='certifications'] #portfolio-content > #certifications,
+:root[data-view='portfolio'][data-section='activity'] #portfolio-content > #activity,
+:root[data-view='portfolio'][data-section='contact'] #portfolio-content > #contact {
+  display: block;
+}
+:root[data-view='portfolio'][data-section]:not([data-section='contact']) #portfolio-content > .foot,
+[data-portfolio-section][hidden],
+#portfolio-content > .foot[hidden] {
+  display: none !important;
+}
+.portfolio-view { min-height: 100dvh; }
+:root[data-view='portfolio'] #portfolio-content { min-height: calc(100dvh - 72px); }
+:root[data-view='portfolio'] #portfolio-content > .section { padding-top: clamp(40px, 6vw, 80px); }
+@media (max-width: 767px) {
+  :root[data-view='portfolio'] { scroll-padding-top: 136px; }
+  :root[data-view='portfolio'] #portfolio-content { min-height: calc(100dvh - 116px); }
+}
+
+/* Silkscreen no contiene caracteres chinos; se respeta la tipografía del sistema. */
+html[lang^='zh'] .pixel,
+html[lang^='zh'] .section-title {
+  font-family: 'Noto Sans SC', 'Microsoft YaHei', 'PingFang SC', var(--font-read);
+  letter-spacing: .015em;
+  line-height: 1.4;
+}
+
+.no-js [data-intro] { display: none; }
+
 .mono {
   font-family: var(--font-mono);
 }
