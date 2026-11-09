@@ -289,7 +289,7 @@ export function createCannon3D(container: HTMLElement): Cannon3D | null {
 
   const aimAt = (clientX: number, clientY: number) => {
     target = { x: clientX, y: clientY };
-    if (disposed || reduce.matches) return;
+    if (disposed) return;
     const rect = container.getBoundingClientRect();
     if (!rect.width || !rect.height) return;
     ndc.set((clientX - rect.left) / rect.width * 2 - 1, 1 - (clientY - rect.top) / rect.height * 2);
@@ -305,6 +305,7 @@ export function createCannon3D(container: HTMLElement): Cannon3D | null {
     difference = THREE.MathUtils.clamp(difference, -1.14, 1.14);
     wantedYaw = neutralYaw + difference;
     wantedPitch = THREE.MathUtils.clamp(Math.atan2(direction.y, Math.hypot(direction.x, direction.z)), .22, 1.34);
+    if (reduce.matches) { currentYaw = wantedYaw; currentPitch = wantedPitch; updatePose(); render(); return; }
     request();
   };
 

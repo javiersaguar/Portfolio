@@ -39,6 +39,16 @@ let frame = 0;
 let shooting = false;
 let transitionTimer: ReturnType<typeof setTimeout> | undefined;
 let impactTimer: ReturnType<typeof setTimeout> | undefined;
+const movementKeys = new Set<string>();
+let movementFrame = 0;
+let movementTime = 0;
+const directions: Record<string, [number, number]> = { ArrowLeft: [-1, 0], a: [-1, 0], ArrowRight: [1, 0], d: [1, 0], ArrowUp: [0, -1], w: [0, -1], ArrowDown: [0, 1], s: [0, 1] };
+const stopMovement = () => {
+  movementKeys.clear();
+  if (movementFrame) cancelAnimationFrame(movementFrame);
+  movementFrame = 0;
+  movementTime = 0;
+};
 let audioContext: AudioContext | undefined;
 let sound = false;
 try { sound = localStorage.getItem('js-arcade-sound') === 'on'; } catch { /* El sonido es opcional. */ }
@@ -95,7 +105,7 @@ const aim = (x: number, y: number) => {
   if (model) { model.aimAt(x, y); return; }
   const origin = center(pivot);
   targetAngle = Math.max(-76, Math.min(76, Math.atan2(x - origin.x, origin.y - y) * 180 / Math.PI));
-  if (reducedMotion.matches) return;
+  if (reducedMotion.matches) { angle = targetAngle; turret.style.transform = `rotate(${angle}deg)`; return; }
   if (!frame) frame = requestAnimationFrame(rotate);
 };
 const selectTarget = (target: HTMLAnchorElement | null) => {
@@ -109,6 +119,8 @@ const selectTarget = (target: HTMLAnchorElement | null) => {
 };
 
 const setView = (view: 'arcade' | 'portfolio', id?: string, focus = true) => {
+  stopMovement();
+  stage.classList.remove('is-keyboard-aiming');
   root.dataset.view = view;
   stage.classList.remove('is-tracking');
   if (frame) cancelAnimationFrame(frame);
@@ -204,6 +216,8 @@ const shoot = (point: { x: number; y: number }, target?: HTMLAnchorElement, inst
 stage.addEventListener('pointermove', event => {
   if (!finePointer.matches || prefersReducedMotion() || root.dataset.view !== 'arcade') return;
   const bounds = stage.getBoundingClientRect();
+  stopMovement();
+  stage.classList.remove('is-keyboard-aiming');
   stage.classList.add('is-tracking');
   crosshair.style.transform = `translate(${event.clientX - bounds.left}px, ${event.clientY - bounds.top}px)`;
   aim(event.clientX, event.clientY);
@@ -232,12 +246,6 @@ targets.forEach((target, index) => {
     }
     shoot(center(target.querySelector<HTMLElement>('.alien')!), target, event.detail === 0);
   });
-  target.addEventListener('keydown', event => {
-    const offset = ({ ArrowLeft: -1, ArrowRight: 1, ArrowUp: -4, ArrowDown: 4 } as Record<string, number>)[event.key];
-    if (offset === undefined) return;
-    event.preventDefault();
-    targets[(index + offset + targets.length) % targets.length].focus();
-  });
 });
 
 document.querySelectorAll<HTMLAnchorElement>('[data-open-arcade]').forEach(link => link.addEventListener('click', event => {
@@ -260,10 +268,69 @@ const fromHash = () => {
 };
 addEventListener('popstate', fromHash);
 addEventListener('hashchange', fromHash);
+// El teclado mueve una mira libre: mantener una tecla permite apuntar de forma continua.
+const moveKeyboardAim = (now: number) => {
+  movementFrame = 0;
+  if (!movementKeys.size || root.dataset.view !== 'arcade' || document.hidden || shooting) { stopMovement(); return; }
+  const bounds = stage.getBoundingClientRect();
+  const initial = lastAim ?? (active ? center(active.querySelector<HTMLElement>('.alien')!) : { x: bounds.left + bounds.width / 2, y: bounds.top + bounds.height / 3 });
+  let dx = 0, dy = 0;
+  movementKeys.forEach(key => { dx += directions[key][0]; dy += directions[key][1]; });
+  const length = Math.hypot(dx, dy) || 1;
+  const elapsed = Math.min(.04, movementTime ? (now - movementTime) / 1000 : .016);
+  movementTime = now;
+  const speed = Math.max(360, Math.min(900, bounds.width * .65));
+  const point = {
+    x: Math.max(bounds.left + 8, Math.min(bounds.right - 8, initial.x + dx / length * speed * elapsed)),
+    y: Math.max(bounds.top + 8, Math.min(bounds.bottom - 8, initial.y + dy / length * speed * elapsed)),
+  };
+  stage.classList.remove('is-tracking');
+  stage.classList.add('is-keyboard-aiming');
+  crosshair.style.transform = `translate(${point.x - bounds.left}px, ${point.y - bounds.top}px)`;
+  selectTarget(targets.find(target => {
+    const rect = target.querySelector<HTMLElement>('.alien')!.getBoundingClientRect();
+    return point.x >= rect.left && point.x <= rect.right && point.y >= rect.top && point.y <= rect.bottom;
+  }) ?? null);
+  aim(point.x, point.y);
+  movementFrame = requestAnimationFrame(moveKeyboardAim);
+};
 addEventListener('keydown', event => {
-  if (root.dataset.view !== 'arcade' || root.dataset.intro === 'pending' || /^(INPUT|TEXTAREA|SELECT)$/.test((event.target as HTMLElement).tagName) || event.metaKey || event.ctrlKey || event.altKey) return;
-  if (/^[1-8]$/.test(event.key)) { event.preventDefault(); targets[Number(event.key) - 1].focus(); }
+  const element = event.target as HTMLElement;
+  if (root.dataset.view !== 'arcade' || root.dataset.intro === 'pending' || element.closest('input,textarea,select,button,[contenteditable]:not([contenteditable="false"]),a:not([data-target])') || event.metaKey || event.ctrlKey || event.altKey) return;
+  const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+  if (key in directions) {
+    event.preventDefault();
+    if (shooting) return;
+    movementKeys.add(key);
+    if (!movementFrame) moveKeyboardAim(performance.now());
+    return;
+  }
+  if (event.code === 'Space' || event.key === ' ') {
+    event.preventDefault();
+    if (event.repeat) return;
+    const bounds = stage.getBoundingClientRect();
+    const point = lastAim ?? (active ? center(active.querySelector<HTMLElement>('.alien')!) : { x: bounds.left + bounds.width / 2, y: bounds.top + bounds.height / 3 });
+    const target = targets.find(item => {
+      const rect = item.getBoundingClientRect();
+      return point.x >= rect.left && point.x <= rect.right && point.y >= rect.top && point.y <= rect.bottom;
+    });
+    shoot(point, target);
+    return;
+  }
+  if (/^[1-8]$/.test(event.key)) {
+    event.preventDefault(); stopMovement();
+    const target = targets[Number(event.key) - 1];
+    target.focus({ preventScroll: true }); selectTarget(target);
+    const point = center(target.querySelector<HTMLElement>('.alien')!); aim(point.x, point.y);
+    const bounds = stage.getBoundingClientRect();
+    crosshair.style.transform = `translate(${point.x - bounds.left}px, ${point.y - bounds.top}px)`;
+  }
 });
+addEventListener('keyup', event => {
+  movementKeys.delete(event.key.length === 1 ? event.key.toLowerCase() : event.key);
+  if (!movementKeys.size) stopMovement();
+});
+addEventListener('blur', stopMovement);
 // Una rotación del móvil cambia la posición de los objetivos, no su selección.
 addEventListener('resize', () => {
   if (root.dataset.view !== 'arcade') return;
@@ -279,6 +346,7 @@ addEventListener('resize', () => {
   }
 });
 document.addEventListener('visibilitychange', () => {
+  if (document.hidden) stopMovement();
   if (document.hidden && frame) { cancelAnimationFrame(frame); frame = 0; }
   cannon3d?.setActive(!document.hidden && root.dataset.view === 'arcade');
   aliens3d?.setActive(!document.hidden && root.dataset.view === 'arcade');
