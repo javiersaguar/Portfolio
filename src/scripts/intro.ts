@@ -5,7 +5,6 @@ const intro = document.querySelector<HTMLElement>('[data-native-intro]')!;
 const art = intro.querySelector<HTMLElement>('[data-intro-art]')!;
 const skip = intro.querySelector<HTMLButtonElement>('[data-skip-intro]')!;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)');
-const SEEN_KEY = 'js-intro-seen-native-v1';
 const DURATION = 2800;
 let loadingTimer: ReturnType<typeof setTimeout> | undefined;
 let playbackTimer: ReturnType<typeof setTimeout> | undefined;
@@ -29,7 +28,6 @@ const finalize = (focus: boolean) => {
   assetRequest++;
   root.dataset.intro = 'done';
   intro.hidden = true;
-  try { sessionStorage.setItem(SEEN_KEY, 'yes'); } catch { /* El contenido sigue siendo accesible sin almacenamiento. */ }
   document.removeEventListener('theme', onTheme);
   document.removeEventListener('keydown', onKey);
   reduce.removeEventListener('change', onMotion);

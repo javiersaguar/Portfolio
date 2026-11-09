@@ -66,6 +66,8 @@ const locale = pageLocale(Astro.url);
       try { localStorage.setItem('js-language', locale); } catch { /* La navegación funciona sin almacenamiento. */ }
       const destination = new URL(locale === 'en' ? '/' : `/${locale}/`, location.origin);
       destination.hash = location.hash;
+      destination.search = location.search;
+      try { sessionStorage.setItem('js-skip-intro-navigation', 'yes'); } catch { /* Preferencia opcional. */ }
       location.assign(destination);
     });
   });

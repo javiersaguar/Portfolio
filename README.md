@@ -14,9 +14,11 @@ La entrada ensambla el nombre durante 2,8 segundos a partir de las imágenes ori
 
 Los modelos de Three.js se cargan al mostrar el menú. El cañón dibuja cuando cambia la orientación, el tema, el tamaño o el retroceso; los marcianos comparten una superficie y una flotación limitada a treinta renders por segundo. Ambos se detienen al abrir un apartado u ocultar la pestaña. La alternativa de píxeles se reserva para un fallo real de WebGL y permanece oculta durante la carga normal. La barra de desarrollo de Astro está desactivada.
 
-Las rutas `/`, `/es/` y `/zh/` generan el contenido en inglés, español y chino simplificado. La primera visita usa inglés. El selector guarda la elección en `localStorage`, conserva la sección actual y reutiliza el idioma en visitas posteriores. El tema sigue el sistema hasta que se elige uno manualmente. La intro aparece una vez por sesión de pestaña, puede saltarse y se omite con movimiento reducido o enlaces directos a secciones.
+Las rutas `/`, `/es/` y `/zh/` generan el contenido en inglés, español y chino simplificado. La primera visita usa inglés. El selector guarda la elección en `localStorage`, conserva la sección actual y reutiliza el idioma en visitas posteriores. El tema sigue el sistema hasta que se elige uno manualmente. La intro aparece al cargar o recargar el menú inicial; no se repite al cambiar de tema ni al volver desde un apartado. Puede saltarse y se omite con movimiento reducido o enlaces directos a secciones.
 
-Cada apartado muestra únicamente su contenido, conserva su diseño y su ancla original y ofrece el botón «Back to arcade menu». El cambio de idioma conserva el apartado abierto y el historial permite volver atrás o avanzar. El acceso directo abre el perfil. Sin JavaScript se muestran el menú estático, los enlaces de idioma y el contenido completo.
+Cada apartado muestra únicamente su contenido, conserva su diseño y su ancla original y ofrece el botón «Back to arcade menu». El cambio de idioma conserva el apartado abierto y el historial permite volver atrás o avanzar. El acceso directo abre el portfolio completo con navegación por anclas. Cada apartado aislado incluye un botón para avanzar al siguiente destino del arcade: una descarga láser destruye el botón antes de navegar. Sin JavaScript se muestran el menú estático, los enlaces de idioma y el contenido completo.
+
+Los controles de avance y vuelta al arcade permanecen visibles en una barra fija, también en móvil. Ambos comparten el impacto láser, con navegación inmediata cuando está activado el movimiento reducido. Estudios, experiencia, soft skills y la ficha personal presentan su contenido por bloques animados al entrar, sin bucles sobre el texto.
 
 Fuentes de contenido:
 

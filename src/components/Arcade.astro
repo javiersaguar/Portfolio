@@ -54,7 +54,7 @@ const copy = arcadeCopy(pageLocale(Astro.url));
   <footer class="arcade-footer">
     <div class="aim-help" id="aim-instructions"><span class="mouse-help">{copy.aim}</span><span class="touch-help">{copy.touch}</span><span class="keyboard-help mono">{copy.keyboard}</span></div>
     <div class="arcade-actions">
-      <a class="direct-link" href="#top" data-direct>{copy.direct}<span aria-hidden="true"> ↗</span></a>
+      <a class="direct-link" href="?view=full#top" data-direct>{copy.direct}<span aria-hidden="true"> ↗</span></a>
       <button class="sound-toggle mono" type="button" data-sound aria-pressed="false" aria-label={copy.soundLabel}>{copy.soundOff}</button>
     </div>
   </footer>

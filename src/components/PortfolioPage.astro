@@ -10,6 +10,7 @@ import Stack from './Stack.astro';
 import Certifications from './Certifications.astro';
 import Activity from './Activity.astro';
 import Contact from './Contact.astro';
+import NextSection from './NextSection.astro';
 ---
 <Base>
   <Arcade />
@@ -25,5 +26,9 @@ import Contact from './Contact.astro';
       <Activity />
       <Contact />
     </main>
+    <NextSection />
   </div>
 </Base>
+<script>
+  import '../scripts/section-motion';
+</script>

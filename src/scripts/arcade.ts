@@ -3,6 +3,7 @@ import type { arcadeCopy } from '../data/arcade-copy';
 import { showSection } from './section-view';
 import type { Aliens3D } from './aliens3d';
 import { fireLaser, IMPACT_DELAY, SHOT_DURATION } from './shot-effects';
+import { laserNavigate } from './navigation-laser';
 
 const root = document.documentElement;
 const arcade = document.querySelector<HTMLElement>('[data-arcade]')!;
@@ -119,6 +120,7 @@ const selectTarget = (target: HTMLAnchorElement | null) => {
 };
 
 const setView = (view: 'arcade' | 'portfolio', id?: string, focus = true) => {
+  root.dataset.portfolioMode = new URLSearchParams(location.search).get('view') === 'full' ? 'full' : 'section';
   stopMovement();
   stage.classList.remove('is-keyboard-aiming');
   root.dataset.view = view;
@@ -251,13 +253,18 @@ targets.forEach((target, index) => {
 document.querySelectorAll<HTMLAnchorElement>('[data-open-arcade]').forEach(link => link.addEventListener('click', event => {
   if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
   event.preventDefault();
-  history.pushState({ arcade: true }, '', '#arcade');
-  setView('arcade');
+  const go = () => {
+    const url = new URL(location.href); url.searchParams.delete('view'); url.hash = 'arcade';
+    history.pushState({ arcade: true }, '', url);
+    setView('arcade');
+  };
+  if (link.classList.contains('brand')) go(); else laserNavigate(link, go);
 }));
 arcade.querySelector<HTMLAnchorElement>('[data-direct]')!.addEventListener('click', event => {
   if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
   event.preventDefault();
-  navigate('top');
+  const url = new URL(location.href); url.searchParams.set('view', 'full'); url.hash = 'top';
+  history.pushState({ portfolio: 'top' }, '', url); setView('portfolio', 'top');
 });
 const fromHash = () => {
   clearTimeout(transitionTimer);

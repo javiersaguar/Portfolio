@@ -42,12 +42,14 @@ const {
         }
       } catch (e) {}
       var section = location.hash.slice(1);
+      var fullPortfolio = new URLSearchParams(location.search).get('view') === 'full';
+      document.documentElement.dataset.portfolioMode = fullPortfolio ? 'full' : 'section';
       var isSection = ['top', 'projects', 'about', 'education', 'experience', 'skills', 'stack', 'certifications', 'activity', 'contact'].indexOf(section) !== -1;
-      document.documentElement.dataset.view = isSection ? 'portfolio' : 'arcade';
+      document.documentElement.dataset.view = isSection || fullPortfolio ? 'portfolio' : 'arcade';
       document.documentElement.dataset.section = isSection ? section : 'top';
-      var hasSeenIntro = false;
-      try { hasSeenIntro = sessionStorage.getItem('js-intro-seen-native-v1') === 'yes'; } catch (e) {}
-      document.documentElement.dataset.intro = !isSection && !hasSeenIntro && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 'pending' : 'done';
+      var skipIntro = false;
+      try { skipIntro = sessionStorage.getItem('js-skip-intro-navigation') === 'yes'; sessionStorage.removeItem('js-skip-intro-navigation'); } catch (e) {}
+      document.documentElement.dataset.intro = !isSection && !fullPortfolio && !skipIntro && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 'pending' : 'done';
     </script>
   </head>
   <body>

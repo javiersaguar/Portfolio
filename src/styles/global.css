@@ -149,7 +149,7 @@ img {
 }
 
 /* Cada destino del arcade abre una sola vista, sin el resto del portfolio debajo. */
-:root[data-view='portfolio'][data-section] #portfolio-content > section {
+:root[data-view='portfolio'][data-section]:not([data-portfolio-mode='full']) #portfolio-content > section {
   display: none;
 }
 :root[data-view='portfolio'][data-section='top'] #portfolio-content > #top {
@@ -166,12 +166,16 @@ img {
 :root[data-view='portfolio'][data-section='contact'] #portfolio-content > #contact {
   display: block;
 }
-:root[data-view='portfolio'][data-section]:not([data-section='contact']) #portfolio-content > .foot,
+:root[data-view='portfolio'][data-section]:not([data-section='contact']):not([data-portfolio-mode='full']) #portfolio-content > .foot,
 [data-portfolio-section][hidden],
 #portfolio-content > .foot[hidden] {
   display: none !important;
 }
-.portfolio-view { min-height: 100dvh; }
+.portfolio-view { min-height: 100dvh; padding-bottom: 130px; }
+@media (max-width: 600px) { .portfolio-view { padding-bottom: 170px; } }
+:root[data-portfolio-mode='full'] #portfolio-content > section { display: block; }
+:root[data-portfolio-mode='full'] #portfolio-content > #top { display: flex; }
+:root[data-portfolio-mode='full'] #portfolio-content > .foot { display: block !important; }
 :root[data-view='portfolio'] #portfolio-content { min-height: calc(100dvh - 72px); }
 :root[data-view='portfolio'] #portfolio-content > .section { padding-top: clamp(40px, 6vw, 80px); }
 @media (max-width: 767px) {
